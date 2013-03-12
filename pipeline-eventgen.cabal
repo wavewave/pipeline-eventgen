@@ -1,0 +1,51 @@
+Name:		pipeline-eventgen
+Version:	0.999
+Synopsis:	event generation executable in pipeline 
+Description: 	This package provides an executable for event generation 
+                in pipeline. 
+License: 	GPL-3
+License-file:	LICENSE
+Author:		Ian-Woo Kim
+Maintainer: 	Ian-Woo Kim <ianwookim@gmail.com>
+Build-Type: 	Simple
+Cabal-Version:  >= 1.6
+data-files: 
+
+
+Executable pipeline-eventgen 
+  Main-is: pipeline-eventgen.hs
+  hs-source-dirs: exe
+  ghc-options: 	-Wall -O2 -threaded -funbox-strict-fields -fno-warn-unused-do-bind
+  ghc-prof-options: -caf-all -auto-all
+  Build-Depends: base>4, 
+                 cmdargs >= 0.7
+
+ 
+Library
+  hs-source-dirs: lib
+  ghc-options: 	-Wall -O2 -threaded -funbox-strict-fields -fno-warn-unused-do-bind -fno-warn-orphans
+  ghc-prof-options: -caf-all -auto-all
+  Build-Depends: base>4, 
+                 process, 
+                 unix, 
+                 directory, 
+                 mtl>2, 
+                 filepath,
+                 aeson,
+                 unordered-containers>= 0.2,
+                 text                >= 0.11, 
+                 vector              >= 0.10,
+                 webdav-manager      >= 0.999,
+                 madgraph-auto       >= 0.999,
+                 madgraph-auto-model >= 0.999,
+                 LHEParser           >= 0.999, 
+                 HEPUtil             >= 0.999, 
+                 attoparsec >= 0.10
+
+
+  Exposed-Modules: 
+                   HEP.Automation.EventGeneration.Type.JSON
+  Other-Modules:   
+
+
+		 
