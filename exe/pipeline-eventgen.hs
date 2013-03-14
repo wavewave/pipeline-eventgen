@@ -26,6 +26,7 @@ import HEP.Storage.WebDAV
 -- 
 import HEP.Automation.EventGeneration.Config
 import HEP.Automation.EventGeneration.Type.JSON
+import HEP.Automation.EventGeneration.Work
 -- 
 import HEP.Automation.EventGeneration.ProgType 
 import qualified Paths_madgraph_auto as PMadGraph
@@ -51,13 +52,9 @@ getScriptSetup = do
 processSetup :: ProcessSetup ADMXQLD211
 processSetup = PS {  
     model = ADMXQLD211
-  , process = "\n\
- \generate p p > go go / ul dl sl cl ur dr sr cr QED=0, (go > c~ cl, cl > d e+ sxxp~) , (go > c~ cl, cl > d e+ sxxp~ ) \n\
- \add process p p > go go / ul dl sl cl ur dr sr cr QED=0, (go > c~ cl, cl > d e+ sxxp~) , (go > c cl~, cl~ > d~ e- sxxp ) \n\
- \add process p p > go go / ul dl sl cl ur dr sr cr QED=0, (go > c cl~, cl~ > d~ e- sxxp) , (go > c~ cl, cl > d e+ sxxp~ ) \n\
- \add process p p > go go / ul dl sl cl ur dr sr cr QED=0, (go > c cl~, cl~ > d~ e- sxxp) , (go > c cl~, cl~ > d~ e- sxxp ) \n"
-  , processBrief = "gluinopair_stopdecayfull" 
-  , workname   = "Test22_20130221_ADMXQLD211"
+  , process = "\ngenerate p p > t t~ \n" 
+  , processBrief = "ttbar" 
+  , workname   = "Test000"
   }
 
 -- | 
@@ -65,7 +62,7 @@ pset :: ModelParam ADMXQLD211
 pset = ADMXQLD211Param { mstop = 50000, mgluino = 300, msquark = 100 }
 
 
-rsetup = RS { numevent = 10000
+rsetup = RS { numevent = 100
             , machine = LHC7 ATLAS
             , rgrun   = Auto -- Fixed
             , rgscale = 200.0
@@ -78,33 +75,46 @@ rsetup = RS { numevent = 10000
             , setnum  = 1
             }
 
+dummywebdav = (WebDAVRemoteDir "")
+
 -- | 
 getWSetup :: ScriptSetup -> WorkSetup ADMXQLD211
-getWSetup ssetup = WS ssetup processSetup  pset rsetup (WebDAVRemoteDir "")
+getWSetup ssetup = WS ssetup processSetup  pset rsetup dummywebdav 
+
+
+
+startTestOutput :: FilePath -> IO () 
+startTestOutput fp = do 
+    mec <- getConfig fp 
+    case mec of 
+       Nothing -> return ()
+       Just ec -> do 
+         let ssetup = evgen_scriptsetup ec 
+             wsetup = getWSetup ssetup 
+         let bstr = encodePretty (EventSet ADMXQLD211 processSetup pset rsetup)
+         (L.putStrLn bstr) 
+
+startTestInput :: FilePath -> IO () 
+startTestInput fp = do 
+    mec <- getConfig fp 
+    case mec of 
+       Nothing -> return ()
+       Just ec -> do 
+         let ssetup = evgen_scriptsetup ec 
+         bstr <- L.getContents 
+         let eevset :: Either String EventSet
+               = do jsonvalue <- (parseOnly json . B.concat . L.toChunks) bstr  
+                    parseEither parseJSON jsonvalue
+         case eevset of 
+           Left err -> putStrLn err
+           Right (EventSet _ psetup param rsetup) -> do 
+             let wsetup = WS ssetup psetup param rsetup dummywebdav
+             work wsetup 
+
 
 main :: IO () 
 main = do 
   param <- cmdArgs mode
   case param of   
-    TestOutput fp -> do 
-      mec <- getConfig fp 
-      case mec of 
-         Nothing -> return ()
-         Just ec -> do 
-           let ssetup = evgen_scriptsetup ec 
-               wsetup = getWSetup ssetup 
-           let bstr = encodePretty wsetup
-           (L.putStrLn bstr) 
-    TestInput fp -> do 
-      mec <- getConfig fp 
-      case mec of 
-         Nothing -> return ()
-         Just ec -> do 
-           let ssetup = evgen_scriptsetup ec 
-               wsetup = getWSetup ssetup 
-           bstr <- L.getContents 
-
-           let (ewsetup2 :: Either String (WorkSetup ADMXQLD211)) 
-                 = do jsonvalue <- (parseOnly json . B.concat . L.toChunks) bstr  
-                      parseEither parseJSON jsonvalue  
-           print ewsetup2 
+    TestOutput fp -> startTestOutput fp 
+    TestInput fp -> startTestInput fp 

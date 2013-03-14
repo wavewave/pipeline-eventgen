@@ -37,7 +37,9 @@ Executable pipeline-eventgen
                  HEPUtil             >= 0.999, 
                  attoparsec >= 0.10,
                  configurator >= 0.2.0.2,  
+                 hslogger >= 1.2,
                  pipeline-eventgen
+               
 
  
 Library
@@ -61,12 +63,14 @@ Library
                  LHEParser           >= 0.999, 
                  HEPUtil             >= 0.999, 
                  attoparsec >= 0.10, 
-                 configurator >= 0.2.0.2
+                 configurator >= 0.2.0.2, 
+                 hslogger >= 1.2 
 
 
   Exposed-Modules: 
                    HEP.Automation.EventGeneration.Config 
                    HEP.Automation.EventGeneration.Type.JSON
+                   HEP.Automation.EventGeneration.Work
  
   Other-Modules:   
 
