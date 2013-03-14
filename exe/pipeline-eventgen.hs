@@ -1,11 +1,18 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 module Main where
 
 import Control.Applicative ((<$>),(<*>),pure)
 -- import Data.Aeson (encode)
+import Data.Attoparsec
 import Data.Aeson.Encode.Pretty (encodePretty)
+import qualified Data.Aeson.Generic as G
+import Data.Aeson.Parser (json)
 import Data.Aeson.Types
+import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as L
 import System.Directory 
+import System.Environment
 import System.FilePath((</>),(<.>))
 
 -- 
@@ -17,11 +24,13 @@ import HEP.Automation.MadGraph.SetupType
 import HEP.Automation.MadGraph.Run
 import HEP.Storage.WebDAV
 -- 
+import HEP.Automation.EventGeneration.Config
 import HEP.Automation.EventGeneration.Type.JSON
 -- 
 import qualified Paths_madgraph_auto as PMadGraph
 import qualified Paths_madgraph_auto_model as PModel
 
+{-
 -- |  
 getScriptSetup :: IO ScriptSetup
 getScriptSetup = do 
@@ -35,6 +44,7 @@ getScriptSetup = do
        , mg5base    = homedir </> "repo/ext/MadGraph5_v1_4_8_4/"
        , mcrundir   = homedir </> "repo/workspace/montecarlo/mc/"
        }
+-}
 
 -- | 
 processSetup :: ProcessSetup ADMXQLD211
@@ -54,8 +64,7 @@ pset :: ModelParam ADMXQLD211
 pset = ADMXQLD211Param { mstop = 50000, mgluino = 300, msquark = 100 }
 
 
-rsetup p = RS { param = p
-            , numevent = 10000
+rsetup = RS { numevent = 10000
             , machine = LHC7 ATLAS
             , rgrun   = Auto -- Fixed
             , rgscale = 200.0
@@ -69,14 +78,34 @@ rsetup p = RS { param = p
             }
 
 -- | 
-getWSetup :: IO (WorkSetup ADMXQLD211)
-getWSetup = WS <$> getScriptSetup <*> pure processSetup <*> pure (rsetup pset) 
-               <*> pure (WebDAVRemoteDir "")
+getWSetup :: ScriptSetup -> WorkSetup ADMXQLD211
+getWSetup ssetup = WS ssetup processSetup  pset rsetup (WebDAVRemoteDir "")
 
 main :: IO () 
 main = do 
-  putStrLn "pipeline-eventgen" 
-  (L.putStrLn.encodePretty) (rsetup pset)
+  args <- getArgs
+  let fp = args !! 0 
+  
+  mec <- getConfig fp 
+  case mec of 
+    Nothing -> return ()
+    Just ec -> do 
+      let ssetup = evgen_scriptsetup ec 
+          wsetup = getWSetup ssetup 
+ 
+      putStrLn "pipeline-eventgen" 
+      let bstr = encodePretty wsetup
+
+      (L.putStrLn bstr) 
+
+
+
+      let (ewsetup2 :: Either String (WorkSetup ADMXQLD211)) 
+            = do jsonvalue <- (parseOnly json . B.concat . L.toChunks) bstr  
+                 parseEither parseJSON jsonvalue  
+
+      print ewsetup2 
+  -- (print. G.toJSON) rsetup 
   -- ssetup <- getScriptSetup 
   -- print (toJSON ssetup)
   -- wsetup <- getWSetup   

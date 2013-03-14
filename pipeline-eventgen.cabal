@@ -36,7 +36,8 @@ Executable pipeline-eventgen
                  madgraph-auto-model >= 0.999,
                  LHEParser           >= 0.999, 
                  HEPUtil             >= 0.999, 
-                 attoparsec >= 0.10, 
+                 attoparsec >= 0.10,
+                 configurator >= 0.2.0.2,  
                  pipeline-eventgen
 
  
@@ -45,6 +46,7 @@ Library
   ghc-options: 	-Wall -O2 -threaded -funbox-strict-fields -fno-warn-unused-do-bind -fno-warn-orphans
   ghc-prof-options: -caf-all -auto-all
   Build-Depends: base>4, 
+                 transformers >= 0.3,
                  process, 
                  unix, 
                  directory, 
@@ -59,11 +61,14 @@ Library
                  madgraph-auto-model >= 0.999,
                  LHEParser           >= 0.999, 
                  HEPUtil             >= 0.999, 
-                 attoparsec >= 0.10
+                 attoparsec >= 0.10, 
+                 configurator >= 0.2.0.2
 
 
   Exposed-Modules: 
+                   HEP.Automation.EventGeneration.Config 
                    HEP.Automation.EventGeneration.Type.JSON
+ 
   Other-Modules:   
 
 
