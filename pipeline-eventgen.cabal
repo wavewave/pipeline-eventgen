@@ -8,7 +8,7 @@ License-file:	LICENSE
 Author:		Ian-Woo Kim
 Maintainer: 	Ian-Woo Kim <ianwookim@gmail.com>
 Build-Type: 	Simple
-Cabal-Version:  >= 1.6
+Cabal-Version:  >= 1.8
 data-files: 
 
 
@@ -19,6 +19,25 @@ Executable pipeline-eventgen
   ghc-prof-options: -caf-all -auto-all
   Build-Depends: base>4, 
                  cmdargs >= 0.7
+  Build-Depends: base>4, 
+                 process, 
+                 unix, 
+                 directory, 
+                 mtl>2, 
+                 filepath,
+                 aeson,
+                 aeson-pretty,
+                 bytestring >= 0.10,
+                 unordered-containers>= 0.2,
+                 text                >= 0.11, 
+                 vector              >= 0.10,
+                 webdav-manager      >= 0.999,
+                 madgraph-auto       >= 0.999,
+                 madgraph-auto-model >= 0.999,
+                 LHEParser           >= 0.999, 
+                 HEPUtil             >= 0.999, 
+                 attoparsec >= 0.10, 
+                 pipeline-eventgen
 
  
 Library

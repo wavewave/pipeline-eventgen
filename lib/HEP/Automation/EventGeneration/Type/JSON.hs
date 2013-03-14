@@ -51,6 +51,11 @@ elookup k m = maybe (fail (unpack k ++ " not parsed"))
 lookupfunc :: (FromJSON a) => Text -> M.HashMap Text Value -> Parser a
 lookupfunc k m = elookup k m >>= parseJSON 
 
+-- -- | 
+-- glookupfunc :: (Data a) => Text -> M.HashMap Text Value -> Parser a
+-- glookupfunc k m = elookup k m >>= parseJSON
+
+
 -- | 
 instance (Data a) => FromJSON a where
   parseJSON v = let r = G.fromJSON v 
@@ -58,6 +63,7 @@ instance (Data a) => FromJSON a where
                      Success a -> return a 
                      Error _str -> fail $ (show . typeOf) (undefined :: a) ++ " is not parsed"
 
+{- 
 -- | 
 instance ToJSON MachineType where
   toJSON TeVatron          = object [ "Type" .= String "TeVatron" ]
@@ -149,6 +155,9 @@ instance FromJSON PYTHIAType where
   parseJSON (String "RunPYTHIA") = return RunPYTHIA
   parseJSON _ = fail "PYTHIAType not parsed"
 
+-}
+
+{-
 -- | 
 instance ToJSON PGSJetAlgorithm where
   toJSON (Cone d)  = object [ "Type" .= String "Cone" 
@@ -197,6 +206,7 @@ instance FromJSON PGSType where
       String "RunPGS" -> RunPGS <$> lookupfunc "Algorithm" m 
       _ -> fail "PGSType Not Parsed" 
   parseJSON _ = fail "PGSType Not Parsed" 
+-}
 
 -- | 
 instance ToJSON MadGraphVersion where
@@ -242,17 +252,17 @@ instance (Model a) => FromJSON (ProcessSetup a) where
 -- |
 instance (Model a) => ToJSON (RunSetup a) where
   toJSON p = object [ "param" .= (toJSON . param $ p)
-                    , "numevent"  .= (toJSON . numevent $ p)
-                    , "machine"   .= (toJSON . machine $ p)
-                    , "rgrun"     .= (toJSON . rgrun $ p)
-                    , "rgscale"   .= (toJSON . rgscale $ p)
-                    , "match"     .= (toJSON . match $ p)
-                    , "cut"       .= (toJSON . cut $ p) 
-                    , "pythia"    .= (toJSON . pythia $ p)
+                    , "numevent"  .= (G.toJSON . numevent $ p)
+                    , "machine"   .= (G.toJSON . machine $ p)
+                    , "rgrun"     .= (G.toJSON . rgrun $ p)
+                    , "rgscale"   .= (G.toJSON . rgscale $ p)
+                    , "match"     .= (G.toJSON . match $ p)
+                    , "cut"       .= (G.toJSON . cut $ p) 
+                    , "pythia"    .= (G.toJSON . pythia $ p)
                     , "lhesanitizer" .= (G.toJSON . lhesanitizer $ p)
-                    , "pgs"       .= (toJSON . pgs $ p) 
+                    , "pgs"       .= (G.toJSON . pgs $ p) 
                     , "hep"       .= (G.toJSON . uploadhep $ p)
-                    , "setnum"    .= (toJSON . setnum $ p) ] 
+                    , "setnum"    .= (G.toJSON . setnum $ p) ] 
 
 -- |
 instance (Model a) => FromJSON (RunSetup a) where
@@ -269,7 +279,6 @@ instance (Model a) => FromJSON (RunSetup a) where
                               <*> lookupfunc "hep" m     
                               <*> lookupfunc "setnum" m
   parseJSON _ = fail "RunSetup not parsed"
-
 
 -- | 
 instance ToJSON WebDAVRemoteDir where
