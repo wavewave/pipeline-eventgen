@@ -11,10 +11,10 @@ import Data.Aeson.Parser (json)
 import Data.Aeson.Types
 import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as L
+import System.Console.CmdArgs
 import System.Directory 
 import System.Environment
 import System.FilePath((</>),(<.>))
-
 -- 
 import HEP.Automation.MadGraph.Model
 -- import HEP.Automation.MadGraph.Model.SM
@@ -27,6 +27,7 @@ import HEP.Storage.WebDAV
 import HEP.Automation.EventGeneration.Config
 import HEP.Automation.EventGeneration.Type.JSON
 -- 
+import HEP.Automation.EventGeneration.ProgType 
 import qualified Paths_madgraph_auto as PMadGraph
 import qualified Paths_madgraph_auto_model as PModel
 
@@ -83,30 +84,27 @@ getWSetup ssetup = WS ssetup processSetup  pset rsetup (WebDAVRemoteDir "")
 
 main :: IO () 
 main = do 
-  args <- getArgs
-  let fp = args !! 0 
-  
-  mec <- getConfig fp 
-  case mec of 
-    Nothing -> return ()
-    Just ec -> do 
-      let ssetup = evgen_scriptsetup ec 
-          wsetup = getWSetup ssetup 
- 
-      putStrLn "pipeline-eventgen" 
-      let bstr = encodePretty wsetup
+  param <- cmdArgs mode
+  case param of   
+    TestOutput fp -> do 
+      mec <- getConfig fp 
+      case mec of 
+         Nothing -> return ()
+         Just ec -> do 
+           let ssetup = evgen_scriptsetup ec 
+               wsetup = getWSetup ssetup 
+           let bstr = encodePretty wsetup
+           (L.putStrLn bstr) 
+    TestInput fp -> do 
+      mec <- getConfig fp 
+      case mec of 
+         Nothing -> return ()
+         Just ec -> do 
+           let ssetup = evgen_scriptsetup ec 
+               wsetup = getWSetup ssetup 
+           bstr <- L.getContents 
 
-      (L.putStrLn bstr) 
-
-
-
-      let (ewsetup2 :: Either String (WorkSetup ADMXQLD211)) 
-            = do jsonvalue <- (parseOnly json . B.concat . L.toChunks) bstr  
-                 parseEither parseJSON jsonvalue  
-
-      print ewsetup2 
-  -- (print. G.toJSON) rsetup 
-  -- ssetup <- getScriptSetup 
-  -- print (toJSON ssetup)
-  -- wsetup <- getWSetup   
-  -- print (toJSON wsetup)
+           let (ewsetup2 :: Either String (WorkSetup ADMXQLD211)) 
+                 = do jsonvalue <- (parseOnly json . B.concat . L.toChunks) bstr  
+                      parseEither parseJSON jsonvalue  
+           print ewsetup2 
