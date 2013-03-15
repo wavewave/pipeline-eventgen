@@ -75,7 +75,7 @@ rsetup = RS { numevent = 100
             , setnum  = 1
             }
 
-dummywebdav = (WebDAVRemoteDir "")
+dummywebdav = (WebDAVRemoteDir "curltest")
 
 -- | 
 getWSetup :: ScriptSetup -> WorkSetup ADMXQLD211
@@ -83,33 +83,59 @@ getWSetup ssetup = WS ssetup processSetup  pset rsetup dummywebdav
 
 
 
+
 startTestOutput :: FilePath -> IO () 
-startTestOutput fp = do 
-    mec <- getConfig fp 
-    case mec of 
-       Nothing -> return ()
-       Just ec -> do 
-         let ssetup = evgen_scriptsetup ec 
-             wsetup = getWSetup ssetup 
-         let bstr = encodePretty (EventSet ADMXQLD211 processSetup pset rsetup)
-         (L.putStrLn bstr) 
+startTestOutput fp =  
+    getConfig fp >>= 
+      maybe (return ()) ( \ec -> do 
+        let ssetup = evgen_scriptsetup ec 
+            wsetup = getWSetup ssetup 
+        let bstr = encodePretty (EventSet ADMXQLD211 processSetup pset rsetup)
+        (L.putStrLn bstr) 
+      )
+
+parseEvSetFromStdin :: IO (Either String EventSet) 
+parseEvSetFromStdin = do 
+    bstr <- L.getContents 
+    return $ do jsonvalue <- (parseOnly json . B.concat . L.toChunks) bstr  
+                parseEither parseJSON jsonvalue
+
 
 startTestInput :: FilePath -> IO () 
 startTestInput fp = do 
-    mec <- getConfig fp 
-    case mec of 
-       Nothing -> return ()
-       Just ec -> do 
-         let ssetup = evgen_scriptsetup ec 
-         bstr <- L.getContents 
-         let eevset :: Either String EventSet
-               = do jsonvalue <- (parseOnly json . B.concat . L.toChunks) bstr  
-                    parseEither parseJSON jsonvalue
-         case eevset of 
-           Left err -> putStrLn err
-           Right (EventSet _ psetup param rsetup) -> do 
-             let wsetup = WS ssetup psetup param rsetup dummywebdav
-             work wsetup 
+    getConfig fp >>= 
+      maybe (return ()) ( \ec -> do 
+        parseEvSetFromStdin >>= 
+          either putStrLn ( \(EventSet _ psetup param rsetup) -> do 
+            let -- wdavdir = (WebDAVRemoteDir wpath)
+                ssetup = evgen_scriptsetup ec 
+                wsetup = WS ssetup psetup param rsetup dummywebdav -- wdavdir 
+            work wsetup 
+          )
+      )
+
+startTestUpload :: FilePath -> (String,String,String) -> IO () 
+startTestUpload fp (whost,wid,wpass) = do 
+    getConfig fp >>= 
+      maybe (return ()) ( \ec -> do 
+        parseEvSetFromStdin >>= 
+          either putStrLn ( \(EventSet _ psetup param rsetup) -> do 
+            let -- wdavdir = (WebDAVRemoteDir wpath)
+                ssetup = evgen_scriptsetup ec 
+                wsetup = WS ssetup psetup param rsetup dummywebdav
+                wdavcfg = WebDAVConfig { webdav_path_wget = "/usr/bin/wget"
+                                       , webdav_path_cadaver = "/usr/bin/cadaver"
+                                       , webdav_baseurl = whost }
+            uploadEventFull wdavcfg wsetup 
+            return ()
+          )
+      )
+    
+
+{-        bstr <- L.getContents 
+        let eevset :: Either String EventSet
+              = do jsonvalue <- (parseOnly json . B.concat . L.toChunks) bstr  
+                   parseEither parseJSON jsonvalue -}
 
 
 main :: IO () 
@@ -117,4 +143,5 @@ main = do
   param <- cmdArgs mode
   case param of   
     TestOutput fp -> startTestOutput fp 
-    TestInput fp -> startTestInput fp 
+    TestEvgen fp -> startTestInput fp 
+    TestUpload fp whost wid wpass -> startTestUpload fp (whost,wid,wpass)
