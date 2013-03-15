@@ -64,6 +64,11 @@ Library
                  HEPUtil             >= 0.999, 
                  attoparsec >= 0.10, 
                  configurator >= 0.2.0.2, 
+                 bytestring >= 0.10,
+                 base64-bytestring >= 1,
+                 binary >= 0.5,
+                 crypto-api >= 0.10, 
+                 RSA >= 1.2, 
                  hslogger >= 1.2 
 
 

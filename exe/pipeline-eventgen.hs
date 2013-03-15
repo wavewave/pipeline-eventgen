@@ -69,9 +69,10 @@ rsetup = RS { numevent = 100
             , match   = NoMatch
             , cut     = NoCut 
             , pythia  = RunPYTHIA
-            , lhesanitizer = LHESanitize (Replace [(9000201,1000022),(-9000201,1000022)]) 
+            , lhesanitizer = NoLHESanitize  
+                             -- LHESanitize (Replace [(9000201,1000022),(-9000201,1000022)]) 
             , pgs     = RunPGS (Cone 0.4,WithTau)
-            , uploadhep = NoUploadHEP
+            , uploadhep = UploadHEP
             , setnum  = 1
             }
 
@@ -114,19 +115,20 @@ startTestInput fp = do
           )
       )
 
-startTestUpload :: FilePath -> (String,String,String) -> IO () 
-startTestUpload fp (whost,wid,wpass) = do 
+startTestUpload :: FilePath -> String -> IO () 
+startTestUpload fp whost = do 
     getConfig fp >>= 
       maybe (return ()) ( \ec -> do 
         parseEvSetFromStdin >>= 
           either putStrLn ( \(EventSet _ psetup param rsetup) -> do 
-            let -- wdavdir = (WebDAVRemoteDir wpath)
-                ssetup = evgen_scriptsetup ec 
+            let ssetup = evgen_scriptsetup ec 
                 wsetup = WS ssetup psetup param rsetup dummywebdav
-                wdavcfg = WebDAVConfig { webdav_path_wget = "/usr/bin/wget"
-                                       , webdav_path_cadaver = "/usr/bin/cadaver"
+                uploadtyp = uploadhep rsetup 
+            Just cr <- getCredential ec
+            let wdavcfg = WebDAVConfig { webdav_credential = cr 
                                        , webdav_baseurl = whost }
-            uploadEventFull wdavcfg wsetup 
+
+            uploadEventFull uploadtyp wdavcfg wsetup 
             return ()
           )
       )
@@ -144,4 +146,4 @@ main = do
   case param of   
     TestOutput fp -> startTestOutput fp 
     TestEvgen fp -> startTestInput fp 
-    TestUpload fp whost wid wpass -> startTestUpload fp (whost,wid,wpass)
+    TestUpload fp whost -> startTestUpload fp whost
