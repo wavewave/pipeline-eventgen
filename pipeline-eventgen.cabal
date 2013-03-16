@@ -74,8 +74,10 @@ Library
 
   Exposed-Modules: 
                    HEP.Automation.EventGeneration.Config 
+                   HEP.Automation.EventGeneration.Deploy 
                    HEP.Automation.EventGeneration.Job
                    HEP.Automation.EventGeneration.Type.JSON
+                   HEP.Automation.EventGeneration.Util 
                    HEP.Automation.EventGeneration.Work
  
   Other-Modules:   

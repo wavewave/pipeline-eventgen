@@ -11,7 +11,7 @@
 -- Stability   : experimental
 -- Portability : GHC
 --
--- configuration type
+-- A collection of event generation work specific tasks 
 -- 
 -----------------------------------------------------------------------------
 

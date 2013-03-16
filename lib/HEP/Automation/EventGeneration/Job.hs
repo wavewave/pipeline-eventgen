@@ -38,6 +38,7 @@ import HEP.Automation.MadGraph.Run
 import HEP.Storage.WebDAV
 -- 
 import HEP.Automation.EventGeneration.Config
+import HEP.Automation.EventGeneration.Deploy
 import HEP.Automation.EventGeneration.Type.JSON
 import HEP.Automation.EventGeneration.Work
 -- 
@@ -99,8 +100,8 @@ parseEvSetFromStdin = do
                 parseEither parseJSON jsonvalue
 
 
-startEventgen :: FilePath -> IO () 
-startEventgen fp = do 
+startWork :: FilePath -> IO () 
+startWork fp = do 
     getConfig fp >>= 
       maybe (return ()) ( \ec -> do 
         parseEvSetFromStdin >>= 
@@ -120,12 +121,26 @@ startUpload fp whost = do
             let ssetup = evgen_scriptsetup ec 
                 wsetup = WS ssetup psetup param rsetup dummywebdav
                 uploadtyp = uploadhep rsetup 
-            Just cr <- getCredential ec
+                pkey = evgen_privatekeyfile ec 
+                pswd = evgen_passwordstore ec 
+            Just cr <- getCredential pkey pswd 
             let wdavcfg = WebDAVConfig { webdav_credential = cr 
                                        , webdav_baseurl = whost }
             uploadEventFull uploadtyp wdavcfg wsetup 
             return ()
           )
       )
-    
 
+-- | 
+startDeploy :: FilePath -> ComputerName -> IO ()
+startDeploy fp cname = do 
+  putStrLn "deploy called"
+  getDeployConfig fp >>= 
+    maybe (return ()) ( \dc -> do
+      let pkey = deploy_privatekeyfile dc
+          pswd = deploy_passwordstore dc 
+      Just cr <- getCredential pkey pswd 
+      createDeployRoot dc cname  
+      installMadGraph dc cname cr 
+      installMadGraphModels dc cname 
+    )
