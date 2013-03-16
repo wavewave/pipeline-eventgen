@@ -25,7 +25,6 @@ Executable pipeline-eventgen
                  mtl>2, 
                  filepath,
                  aeson,
-                 aeson-pretty,
                  bytestring >= 0.10,
                  unordered-containers>= 0.2,
                  text                >= 0.11, 
@@ -54,6 +53,7 @@ Library
                  mtl>2, 
                  filepath,
                  aeson,
+                 aeson-pretty,
                  unordered-containers>= 0.2,
                  text                >= 0.11, 
                  vector              >= 0.10,
@@ -74,6 +74,7 @@ Library
 
   Exposed-Modules: 
                    HEP.Automation.EventGeneration.Config 
+                   HEP.Automation.EventGeneration.Job
                    HEP.Automation.EventGeneration.Type.JSON
                    HEP.Automation.EventGeneration.Work
  
