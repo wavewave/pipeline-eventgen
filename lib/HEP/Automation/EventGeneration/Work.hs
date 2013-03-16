@@ -49,7 +49,8 @@ work wsetup = do
                 cardPrepare                      
                 generateEvents   
                 case (lhesanitizer rsetup,pythia rsetup) of
-                  (NoLHESanitize, _) ->
+                  (NoLHESanitize, _) -> do
+                    renamePythiaPGSResult
                     makeHepGz -- return ()
                   (LHESanitize pid, RunPYTHIA) -> do 
                     sanitizeLHE

@@ -69,8 +69,8 @@ rsetup = RS { numevent = 100
             , match   = NoMatch
             , cut     = NoCut 
             , pythia  = RunPYTHIA
-            , lhesanitizer = -- NoLHESanitize  
-                             LHESanitize (Replace [(9000201,1000022),(-9000201,1000022)]) 
+            , lhesanitizer = NoLHESanitize  
+                             -- LHESanitize (Replace [(9000201,1000022),(-9000201,1000022)]) 
             , pgs     = RunPGS (Cone 0.4,WithTau)
             , uploadhep = UploadHEP
             , setnum  = 1
