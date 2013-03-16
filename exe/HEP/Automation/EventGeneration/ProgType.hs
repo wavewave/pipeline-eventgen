@@ -13,24 +13,33 @@ data EvGen = TestOutput { config :: FilePath }
                     } 
            | Deploy { config :: FilePath 
                     , computername :: String
+                    , configout :: FilePath 
                     } 
+           | Remove { config :: FilePath
+                    , computername :: String } 
            deriving (Show,Data,Typeable)
 
 testoutput :: EvGen 
-testoutput = TestOutput { config = "config.txt" } 
+testoutput = TestOutput { config = "" &= typ "CONFIG" &= argPos 0 } 
 
 work :: EvGen 
-work = Work { config = "config.txt" }
+work = Work { config = "" &= typ "CONFIG" &= argPos 0 }
 
 upload :: EvGen 
-upload = Upload { config = "config.txt" 
+upload = Upload { config = "" &= typ "CONFIG" &= argPos 0 
                 , webdavhost = "" 
                 }
 
 deploy :: EvGen 
 deploy = Deploy { config = "deployconfig.txt" 
                 , computername = "" &= typ "COMPUTERNAME" &= argPos 0 
+                , configout = "" &= typ "OUTPUTCONFIG" &= argPos 1 
                 }
 
-mode = modes [ testoutput, work, upload, deploy ] 
+remove :: EvGen 
+remove = Remove { config = "deployconfig.txt"
+                , computername = "" &= typ "COMPUTERNAME" &= argPos 0
+                }
+
+mode = modes [ testoutput, work, upload, deploy, remove ] 
 

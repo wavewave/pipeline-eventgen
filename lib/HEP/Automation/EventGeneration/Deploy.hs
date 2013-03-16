@@ -33,19 +33,25 @@ import qualified Paths_madgraph_auto_model as PModel
 createDeployRoot :: DeployConfig -> ComputerName -> IO () 
 createDeployRoot dc name = do 
   let ndir = deploy_deployroot dc </> name
-  putStrLn ("Creating " ++ ndir)
+  putStrLn ("Creating " ++ ndir ++ " : WARNING : we will clean if exist")
+  cleanDirIfExist ndir 
   createDirIfNotExist (deploy_deployroot dc) 
-  createDirIfNotExist ndir 
+  createDirectory ndir 
+
 
 -- | 
 installMadGraph :: DeployConfig 
                 -> ComputerName 
                 -> Credential
-                -> IO ()
+                -> IO FilePath
 installMadGraph dc cname cr = do 
   let rootdir = deploy_deployroot dc </> cname 
+      url = deploy_mg5url dc
   putStrLn "install madgraph"
-  tempdir <- getTemporaryDirectory 
+  downloadNUntar url rootdir cr 
+  findMadGraphDir dc cname
+
+{-  tempdir <- getTemporaryDirectory 
   setCurrentDirectory tempdir
   let (urlb,fn) = splitFileName (deploy_mg5url dc)
   print (urlb,fn)
@@ -56,7 +62,7 @@ installMadGraph dc cname cr = do
   setCurrentDirectory rootdir 
   system ( "tar xvzf " ++ ( tempdir </> fn ) )
   removeFile (tempdir </> fn )
-  
+-}  
   
 -- |
 findMadGraphDir :: DeployConfig -> ComputerName -> IO FilePath
@@ -75,10 +81,72 @@ findMadGraphDir dc cname = do
 installMadGraphModels :: DeployConfig -> ComputerName -> IO ()
 installMadGraphModels dc cname = do 
   mdldir <- liftM (</>"modelrepo") PModel.getDataDir
-  -- let rootdir = deploy_deployroot dc </> cname 
-  mg5dir <- findMadGraphDir dc cname --  rootdir </> "MadGraph5_v1_5_8"
+  mg5dir <- findMadGraphDir dc cname 
   tempdir <- getTemporaryDirectory 
   let copycmd = "cp -a " ++ mdldir ++ "/* " ++ mg5dir </> "models"
   system copycmd 
   print copycmd 
+
+
+-- | 
+installPythiaPGS :: DeployConfig 
+                 -> ComputerName 
+                 -> Credential
+                 -> IO ()
+installPythiaPGS dc cname cr = do 
+  let rootdir = deploy_deployroot dc </> cname 
+      url = deploy_pythiapgsurl dc
+  putStrLn "install pythia-pgs"
+  downloadNUntar url rootdir cr 
+  pydir <- findPythiaPGSDir dc cname
+  compilePythiaPGS pydir 
+  return ()
+
+-- |
+findPythiaPGSDir :: DeployConfig -> ComputerName -> IO FilePath
+findPythiaPGSDir dc cname = do 
+  let rootdir = deploy_deployroot dc </> cname
+  cnts <- getDirectoryContents rootdir
+  let matchfunc str = 
+        case str of 
+          'p':'y':'t':'h':'i':'a':'-':'p':'g':'s':xs -> True
+          _ -> False 
+  let dir = (head . filter matchfunc) cnts 
+  return (rootdir </> dir)
+
+
+-- | 
+compilePythiaPGS :: FilePath -> IO ()
+compilePythiaPGS pydir = do 
+  setCurrentDirectory pydir
+  system "make" 
+  return ()
+
+-- | 
+createWorkDirs :: DeployConfig -> ComputerName -> IO (FilePath,FilePath)
+createWorkDirs dc cname = do 
+  let sbdir = deploy_deployroot dc </> cname </> "sandbox"
+      mrdir = deploy_deployroot dc </> cname </> "mc"
+  createDirectory sbdir 
+  createDirectory mrdir 
+  pydir <- findPythiaPGSDir dc cname
+
+  system (" ln -s " ++ pydir ++ " " ++ mrdir </> "pythia-pgs" )
+  return (sbdir,mrdir) 
+
+-- | 
+createConfigTxt :: DeployConfig 
+                -> ComputerName 
+                -> (FilePath,FilePath,FilePath)
+                -> FilePath 
+                -> IO () 
+createConfigTxt dc cname (mg5dir,sbdir,mrdir) outcfg = do 
+  let cfgstr = "computerName = " ++ show cname ++ "\n"
+               ++ "privateKeyFile = " ++ show (deploy_privatekeyfile dc) ++ "\n"
+               ++ "passwordStore = " ++ show (deploy_passwordstore dc) ++ "\n"
+               ++ "sandboxdir = " ++ show sbdir ++ "\n"
+               ++ "mg5base = " ++ show mg5dir ++ "\n"
+               ++ "mcrundir = " ++ show mrdir ++ "\n"
+  writeFile outcfg cfgstr 
+
 

@@ -40,6 +40,7 @@ import HEP.Storage.WebDAV
 import HEP.Automation.EventGeneration.Config
 import HEP.Automation.EventGeneration.Deploy
 import HEP.Automation.EventGeneration.Type.JSON
+import HEP.Automation.EventGeneration.Util
 import HEP.Automation.EventGeneration.Work
 -- 
 import qualified Paths_madgraph_auto as PMadGraph
@@ -132,15 +133,35 @@ startUpload fp whost = do
       )
 
 -- | 
-startDeploy :: FilePath -> ComputerName -> IO ()
-startDeploy fp cname = do 
+startDeploy :: FilePath      -- ^ deploy config 
+            -> ComputerName  -- ^ computer name 
+            -> FilePath      -- ^ output config (individual)
+            -> IO ()
+startDeploy fp cname outcfg = do 
   putStrLn "deploy called"
   getDeployConfig fp >>= 
     maybe (return ()) ( \dc -> do
+      cdir <- getCurrentDirectory
+      let outcfg_cano = cdir </> outcfg 
       let pkey = deploy_privatekeyfile dc
           pswd = deploy_passwordstore dc 
       Just cr <- getCredential pkey pswd 
-      createDeployRoot dc cname  
-      installMadGraph dc cname cr 
-      installMadGraphModels dc cname 
+      _      <- createDeployRoot dc cname  
+      mg5dir <- installMadGraph dc cname cr 
+      _      <- installMadGraphModels dc cname 
+      _      <- installPythiaPGS dc cname cr 
+      (sd,md)<- createWorkDirs dc cname 
+      createConfigTxt dc cname (mg5dir,sd,md) outcfg_cano
     )
+
+startRemove :: FilePath      -- ^ deploy config 
+            -> ComputerName  -- ^ computer name 
+            -> IO ()
+startRemove fp cname = do 
+  putStrLn "remove called"
+  getDeployConfig fp >>= 
+    maybe (return ()) ( \dc -> do
+      let ndir = deploy_deployroot dc </> cname
+      cleanDirIfExist ndir 
+    )
+

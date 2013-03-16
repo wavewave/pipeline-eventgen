@@ -49,7 +49,9 @@ data DeployConfig =
        DeployConfig { deploy_privatekeyfile :: FilePath
                     , deploy_passwordstore :: FilePath 
                     , deploy_deployroot :: FilePath
-                    , deploy_mg5url :: String }
+                    , deploy_mg5url :: String 
+                    , deploy_pythiapgsurl :: String 
+                    }
        deriving Show 
 
 -- | 
@@ -87,7 +89,8 @@ getDeployConfig fp = do
       pswd  <- MaybeT (C.lookup config "passwordStore") 
       root <- MaybeT (C.lookup config "deployroot")
       mg5 <-  MaybeT (C.lookup config "mg5url")
-      return (DeployConfig pkey pswd root mg5)
+      pythiapgs <- MaybeT (C.lookup config "pythiapgsurl")
+      return (DeployConfig pkey pswd root mg5 pythiapgs)
 
 
 
