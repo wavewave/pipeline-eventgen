@@ -49,16 +49,19 @@ work wsetup = do
                 cardPrepare                      
                 generateEvents   
                 case (lhesanitizer rsetup,pythia rsetup) of
-                  (NoLHESanitize, _) -> return ()
+                  (NoLHESanitize, _) ->
+                    makeHepGz -- return ()
                   (LHESanitize pid, RunPYTHIA) -> do 
                     sanitizeLHE
                     runPYTHIA
-                    runHEP2LHE
+                    -- runHEP2LHE
                     runPGS           
-                    runClean         
+                    runClean  
+                    makeHepGz       
                     -- updateBanner   
                   (LHESanitize pid, NoPYTHIA) -> do 
                     sanitizeLHE
+                    makeHepGz 
                     -- updateBanner   
                 -- cleanHepFiles  
     print r  
