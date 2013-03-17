@@ -17,7 +17,6 @@
 module HEP.Automation.EventGeneration.Job where 
 
 import Control.Applicative ((<$>),(<*>),pure)
--- import Data.Aeson (encode)
 import Data.Attoparsec
 import Data.Aeson.Encode.Pretty (encodePretty)
 import qualified Data.Aeson.Generic as G
@@ -30,8 +29,6 @@ import System.Environment
 import System.FilePath((</>),(<.>))
 -- 
 import HEP.Automation.MadGraph.Model
--- import HEP.Automation.MadGraph.Model.SM
--- import HEP.Automation.MadGraph.Model.ADMXQLD211
 import HEP.Automation.MadGraph.Machine
 import HEP.Automation.MadGraph.SetupType
 import HEP.Automation.MadGraph.Run

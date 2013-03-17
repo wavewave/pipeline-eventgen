@@ -68,26 +68,6 @@ work wsetup = do
     print r  
     return ()
 
---------------------
--- The following is from Pipeline.Util
---------------------
-
-{-
--- |
-uploadEventFullWithHEP :: (Model a) => WebDAVConfig -> WorkSetup a -> IO Bool
-uploadEventFullWithHEP wdav wsetup = do 
-  mapM_ (uploadEvent wdav wsetup) 
-    [ "_unweighted_events.lhe.gz"
-    , "_events.lhe.gz"
-    , "_pythia_events.lhe.gz"
-    , "_pgs_events.lhco.gz"
-    , "_fermi_banner.txt"
-    , "_fermi__newbanner.txt"
-    , "_pythia.log" 
-    , "_pythia_events.hep.gz" ]  
-  return True 
--}
-
 -- | 
 uploadEventFull :: (Model a) => 
                    HEPFileType 
