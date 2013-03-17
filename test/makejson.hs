@@ -36,11 +36,25 @@ wp01 :: ProcessSetup SM
 wp01 = PS {  
     model = SM
   , process = [ "p p > w+ QCD=99 QED=2 @0"
-              , "p p > w+ j QCD=99 QED=2 @0"
+              , "p p > w+ j QCD=99 QED=2 @1"
               ] 
   , processBrief = "wp01j" 
   , workname   = "wp01j"
   }
+
+wdav_wp01 = WebDAVRemoteDir "montecarlo/admproject/smbkg/wp01"
+
+wp012 :: ProcessSetup SM 
+wp012 = PS {  
+    model = SM
+  , process = [ "p p > w+ QCD=99 QED=2 @0"
+              , "p p > w+ j QCD=99 QED=2 @1"
+              , "p p > w+ j j QCD=99 QED=2 @2"
+              ] 
+  , processBrief = "wp012j" 
+  , workname   = "wp012j"
+  }
+wdav_wp012 = WebDAVRemoteDir "montecarlo/admproject/smbkg/wp012"
 
 
 
@@ -62,7 +76,6 @@ rsetup n = RS { numevent = 100000
               , setnum  = n
               }
 
-wdav = WebDAVRemoteDir "montecarlo/admproject/smbkg/wp01"
 
 
 
@@ -74,15 +87,15 @@ main = do
 
 
 mkjson n = do 
-  let bstr = encodePretty (EventSet SM wp01 pset (rsetup n) wdav)
-  L.writeFile ("testwork" </> "wp01work"++show n++".json") bstr
+  let bstr = encodePretty (EventSet SM wp012 pset (rsetup n) wdav_wp012)
+  L.writeFile ("testwork" </> "wp012work"++show n++".json") bstr
      
 mkpbs n = do 
   cdir <- getCurrentDirectory 
   tmpl <- (directoryGroup cdir :: IO (STGroup String))
   let Just t = getStringTemplate "kzurek.pbs" tmpl 
-      str = (toString . flip setManyAttrib t) [ ("workjson","testwork" </> "wp01work"++show n++".json")  ]  
-  writeFile ("kzurek"++show (n+30) <.> "pbs") str 
+      str = (toString . flip setManyAttrib t) [ ("workjson","testwork" </> "wp012work"++show n++".json")  ]  
+  writeFile ("kzurek"++show (n+40) <.> "pbs") str 
   -- print $ str 
 
 
