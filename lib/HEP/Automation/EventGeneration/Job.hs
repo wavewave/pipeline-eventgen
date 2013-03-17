@@ -65,15 +65,16 @@ startWork fp = do
           )
       )
 
-startUpload :: FilePath -> String -> IO () 
-startUpload fp whost = do 
+startUpload :: FilePath -> IO () 
+startUpload fp = do 
     getConfig fp >>= 
       maybe (return ()) ( \ec -> do 
         parseEvSetFromStdin >>= 
           either putStrLn ( \(EventSet _ psetup param rsetup rdir) -> do 
             let ssetup = evgen_scriptsetup ec 
                 wsetup = WS ssetup psetup param rsetup rdir 
-                uploadtyp = uploadhep rsetup 
+                uploadtyp = uploadhep rsetup
+                whost = evgen_webdavroot ec 
                 pkey = evgen_privatekeyfile ec 
                 pswd = evgen_passwordstore ec 
             Just cr <- getCredential pkey pswd 
@@ -103,7 +104,8 @@ startDeploy fp cname outcfg = do
       _      <- installMadGraphModels dc cname 
       _      <- installPythiaPGS dc cname cr 
       (sd,md)<- createWorkDirs dc cname 
-      createConfigTxt dc cname (mg5dir,sd,md) outcfg_cano 
+      let davroot = deploy_webdavroot dc 
+      createConfigTxt dc cname (mg5dir,sd,md,davroot) outcfg_cano 
     )
 
 startRemove :: FilePath      -- ^ deploy config 

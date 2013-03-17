@@ -42,7 +42,8 @@ data EventgenConfig = EventgenConfig {
   evgen_computerName :: ComputerName, 
   evgen_privatekeyfile :: FilePath, 
   evgen_passwordstore :: FilePath, 
-  evgen_scriptsetup :: ScriptSetup
+  evgen_scriptsetup :: ScriptSetup, 
+  evgen_webdavroot :: String 
 } deriving Show
 
 -- | 
@@ -52,6 +53,7 @@ data DeployConfig =
                     , deploy_deployroot :: FilePath
                     , deploy_mg5url :: String 
                     , deploy_pythiapgsurl :: String 
+                    , deploy_webdavroot :: String 
                     }
        deriving Show 
 
@@ -67,8 +69,9 @@ getConfig fp = do
       rtmpl <- (</> "template") <$> liftIO ( PMadGraph.getDataDir )
       sdir <- MaybeT (C.lookup config "sandboxdir")
       mg5 <-  MaybeT (C.lookup config "mg5base")
-      mc <- MaybeT (C.lookup config "mcrundir") 
-      return (EventgenConfig cname pkey pswd (SS mtmpl rtmpl sdir mg5 mc))
+      mc <- MaybeT (C.lookup config "mcrundir")
+      davroot <- MaybeT (C.lookup config "webdavroot") 
+      return (EventgenConfig cname pkey pswd (SS mtmpl rtmpl sdir mg5 mc) davroot)
 
 -- | 
 getCredential :: FilePath -> FilePath -> IO (Maybe Credential)
@@ -92,7 +95,8 @@ getDeployConfig fp = do
       root <- MaybeT (C.lookup config "deployroot")
       mg5 <-  MaybeT (C.lookup config "mg5url")
       pythiapgs <- MaybeT (C.lookup config "pythiapgsurl")
-      return (DeployConfig pkey pswd root mg5 pythiapgs)
+      davroot <- MaybeT (C.lookup config "webdavroot")
+      return (DeployConfig pkey pswd root mg5 pythiapgs davroot)
 
 
 

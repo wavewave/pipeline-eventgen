@@ -137,16 +137,17 @@ createWorkDirs dc cname = do
 -- | 
 createConfigTxt :: DeployConfig 
                 -> ComputerName 
-                -> (FilePath,FilePath,FilePath)
+                -> (FilePath,FilePath,FilePath,String)
                 -> FilePath 
                 -> IO () 
-createConfigTxt dc cname (mg5dir,sbdir,mrdir) outcfg = do 
+createConfigTxt dc cname (mg5dir,sbdir,mrdir,webdavroot) outcfg = do 
   let cfgstr = "computerName = " ++ show cname ++ "\n"
                ++ "privateKeyFile = " ++ show (deploy_privatekeyfile dc) ++ "\n"
                ++ "passwordStore = " ++ show (deploy_passwordstore dc) ++ "\n"
                ++ "sandboxdir = " ++ show sbdir ++ "\n"
                ++ "mg5base = " ++ show mg5dir ++ "\n"
                ++ "mcrundir = " ++ show mrdir ++ "\n"
+               ++ "webdavroot = " ++ show webdavroot ++ "\n"
   writeFile outcfg cfgstr 
 
 

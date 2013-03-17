@@ -11,6 +11,6 @@ main = do
   param <- cmdArgs mode
   case param of   
     Work fp              -> startWork fp 
-    Upload fp whost      -> startUpload fp whost
+    Upload fp            -> startUpload fp 
     Deploy fp cname cout -> startDeploy fp cname cout
     Remove fp cname      -> startRemove fp cname 
