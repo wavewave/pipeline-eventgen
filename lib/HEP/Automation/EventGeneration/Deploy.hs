@@ -36,7 +36,8 @@ createDeployRoot dc name = do
   putStrLn ("Creating " ++ ndir ++ " : WARNING : we will clean if exist")
   cleanDirIfExist ndir 
   createDirIfNotExist (deploy_deployroot dc) 
-  createDirectory ndir 
+  createDirIfNotExist ndir 
+  createDirIfNotExist (ndir </> "downloads")
 
 
 -- | 
@@ -48,21 +49,9 @@ installMadGraph dc cname cr = do
   let rootdir = deploy_deployroot dc </> cname 
       url = deploy_mg5url dc
   putStrLn "install madgraph"
-  downloadNUntar url rootdir cr 
+  downloadNUntar (rootdir </> "downloads") url rootdir cr 
   findMadGraphDir dc cname
 
-{-  tempdir <- getTemporaryDirectory 
-  setCurrentDirectory tempdir
-  let (urlb,fn) = splitFileName (deploy_mg5url dc)
-  print (urlb,fn)
-  let wdavc = WebDAVConfig { webdav_credential = cr 
-                           , webdav_baseurl = urlb } 
-      rdir = WebDAVRemoteDir "" 
-  downloadFile wdavc rdir fn
-  setCurrentDirectory rootdir 
-  system ( "tar xvzf " ++ ( tempdir </> fn ) )
-  removeFile (tempdir </> fn )
--}  
   
 -- |
 findMadGraphDir :: DeployConfig -> ComputerName -> IO FilePath
@@ -97,7 +86,7 @@ installPythiaPGS dc cname cr = do
   let rootdir = deploy_deployroot dc </> cname 
       url = deploy_pythiapgsurl dc
   putStrLn "install pythia-pgs"
-  downloadNUntar url rootdir cr 
+  downloadNUntar (rootdir </> "downloads") url rootdir cr 
   pydir <- findPythiaPGSDir dc cname
   compilePythiaPGS pydir 
   return ()

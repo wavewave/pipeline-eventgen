@@ -21,8 +21,8 @@ import HEP.Automation.EventGeneration.Type
 
 
 -- | 
-processSetup :: ProcessSetup SM 
-processSetup = PS {  
+ttbar012 :: ProcessSetup SM 
+ttbar012 = PS {  
     model = SM
   , process = [ "p p > t t~   QCD=99 QED=2 @0"
               , "p p > t t~ j QCD=99 QED=2 @1"
@@ -31,6 +31,18 @@ processSetup = PS {
   , processBrief = "ttbar012j" 
   , workname   = "Test003"
   }
+
+wp01 :: ProcessSetup SM 
+wp01 = PS {  
+    model = SM
+  , process = [ "p p > w+ QCD=99 QED=2 @0"
+              , "p p > w+ j QCD=99 QED=2 @0"
+              ] 
+  , processBrief = "wp01j" 
+  , workname   = "wp01j"
+  }
+
+
 
 -- | 
 pset :: ModelParam SM
@@ -50,7 +62,7 @@ rsetup n = RS { numevent = 100000
               , setnum  = n
               }
 
-wdav = WebDAVRemoteDir "montecarlo/admproject/smbkg/ttbar012"
+wdav = WebDAVRemoteDir "montecarlo/admproject/smbkg/wp01"
 
 
 
@@ -62,15 +74,15 @@ main = do
 
 
 mkjson n = do 
-  let bstr = encodePretty (EventSet SM processSetup pset (rsetup n) wdav)
-  L.writeFile ("testwork" </> "ttbar012work"++show n++".json") bstr
+  let bstr = encodePretty (EventSet SM wp01 pset (rsetup n) wdav)
+  L.writeFile ("testwork" </> "wp01work"++show n++".json") bstr
      
 mkpbs n = do 
   cdir <- getCurrentDirectory 
   tmpl <- (directoryGroup cdir :: IO (STGroup String))
   let Just t = getStringTemplate "kzurek.pbs" tmpl 
-      str = (toString . flip setManyAttrib t) [ ("workjson","testwork" </> "ttbar012work"++show n++".json")  ]  
-  writeFile ("kzurek"++show (n+10) <.> "pbs") str 
+      str = (toString . flip setManyAttrib t) [ ("workjson","testwork" </> "wp01work"++show n++".json")  ]  
+  writeFile ("kzurek"++show (n+30) <.> "pbs") str 
   -- print $ str 
 
 
