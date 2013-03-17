@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 -----------------------------------------------------------------------------
 -- |
@@ -79,6 +80,7 @@ getCredential pkey pswd = do
     if length cnts /= 2 
       then return Nothing 
       else return . Just $ CredDigest (cnts !! 0) (cnts !! 1)  
+
 
 -- | 
 getDeployConfig :: FilePath -> IO (Maybe DeployConfig)

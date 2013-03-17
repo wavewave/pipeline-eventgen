@@ -44,7 +44,7 @@ import qualified Paths_madgraph_auto as PMadGraph
 import qualified Paths_madgraph_auto_model as PModel
 
 
-dummywebdav = (WebDAVRemoteDir "curltest")
+-- dummywebdav = (WebDAVRemoteDir "curltest")
 
 parseEvSetFromStdin :: IO (Either String EventSet) 
 parseEvSetFromStdin = do 
@@ -58,9 +58,9 @@ startWork fp = do
     getConfig fp >>= 
       maybe (return ()) ( \ec -> do 
         parseEvSetFromStdin >>= 
-          either putStrLn ( \(EventSet _ psetup param rsetup) -> do 
+          either putStrLn ( \(EventSet _ psetup param rsetup rdir) -> do 
             let ssetup = evgen_scriptsetup ec 
-                wsetup = WS ssetup psetup param rsetup dummywebdav 
+                wsetup = WS ssetup psetup param rsetup rdir 
             work wsetup 
           )
       )
@@ -70,9 +70,9 @@ startUpload fp whost = do
     getConfig fp >>= 
       maybe (return ()) ( \ec -> do 
         parseEvSetFromStdin >>= 
-          either putStrLn ( \(EventSet _ psetup param rsetup) -> do 
+          either putStrLn ( \(EventSet _ psetup param rsetup rdir) -> do 
             let ssetup = evgen_scriptsetup ec 
-                wsetup = WS ssetup psetup param rsetup dummywebdav
+                wsetup = WS ssetup psetup param rsetup rdir 
                 uploadtyp = uploadhep rsetup 
                 pkey = evgen_privatekeyfile ec 
                 pswd = evgen_passwordstore ec 
@@ -103,7 +103,7 @@ startDeploy fp cname outcfg = do
       _      <- installMadGraphModels dc cname 
       _      <- installPythiaPGS dc cname cr 
       (sd,md)<- createWorkDirs dc cname 
-      createConfigTxt dc cname (mg5dir,sd,md) outcfg_cano
+      createConfigTxt dc cname (mg5dir,sd,md) outcfg_cano 
     )
 
 startRemove :: FilePath      -- ^ deploy config 

@@ -39,11 +39,12 @@ data EventSet = forall a. Model a =>
     evset_model  :: a,
     evset_psetup :: ProcessSetup a, 
     evset_param  :: ModelParam a,
-    evset_rsetup :: RunSetup 
+    evset_rsetup :: RunSetup, 
+    evset_webdav :: WebDAVRemoteDir
   } 
 
 instance Show EventSet where
-  show (EventSet mdl psetup param rsetup) = 
+  show (EventSet mdl psetup param rsetup webdav) = 
     show mdl 
     ++ "\n"
     ++ show psetup 
@@ -51,72 +52,20 @@ instance Show EventSet where
     ++ show param 
     ++ "\n"
     ++ show rsetup
+    ++ "\n"
+    ++ show webdav
 
-{-
--- | 
-atomize :: (Show a) => a -> Value 
-atomize = atomizeStr . show 
-
--- | 
-atomizeStr :: String -> Value
-atomizeStr = String . pack
-
--- |
-elookup :: Text -> M.HashMap Text Value -> Parser Value
-elookup k m = maybe (fail (unpack k ++ " not parsed")) 
-                    return 
-                    (M.lookup k m)
-
--- | 
-lookupfunc :: (FromJSON a) => Text -> M.HashMap Text Value -> Parser a
-lookupfunc k m = elookup k m >>= parseJSON 
-
-
--- | 
-instance (Data a) => FromJSON a where
-  parseJSON v = let r = G.fromJSON v 
-                in case r of 
-                     Success a -> return a 
-                     Error _str -> fail $ (show . typeOf) (undefined :: a) ++ " is not parsed"
--}
-
-
-{- 
--- | 
-modelFromJSON :: (Model a) => Value -> Parser a 
-modelFromJSON (String str) = maybe (fail "modelFromJSON failed") return $ modelFromString . unpack $ str
-modelFromJSON _ = fail "modelFromJSON failed"
-
--}
-
-{-
-instance ToJSON RunSetup where 
-  toJSON = G.toJSON
-
-instance (Model a) => ToJSON (WorkSetup a) where
-  toJSON = G.toJSON
-
-instance (Model a) => ToJSON (ProcessSetup a) where 
-  toJSON = G.toJSON
-
-instance (Model a) => ToJSON (ModelParam a) where 
-  toJSON = G.toJSON
-
--- | 
-instance ToJSON WebDAVRemoteDir where
-  toJSON (WebDAVRemoteDir rdir) = toJSON rdir 
-
--- |
-instance FromJSON WebDAVRemoteDir where
-  parseJSON v = WebDAVRemoteDir <$> parseJSON v
--}
 
 instance ToJSON EventSet where
-  toJSON (EventSet mdl psetup param rsetup) = 
+  toJSON (EventSet mdl psetup param rsetup webdav) = 
     object [ "model"  .= (atomizeStr . modelName ) mdl 
            , "psetup" .= toJSON psetup
            , "param"  .= toJSON param
-           , "rsetup" .= toJSON rsetup ] 
+           , "rsetup" .= toJSON rsetup 
+           , "webdav" .= toJSON webdav 
+           ]
+
+            
 
 -- |
 instance FromJSON EventSet where
@@ -131,13 +80,14 @@ instance FromJSON EventSet where
       e -> fail ("model in EventSet failed : " ++ show e)
     where mkEventSet :: ModelBox -> Parser EventSet
           mkEventSet (ModelBox mdl) = 
-               EventSet mdl <$> getPSetup mdl <*> getParam mdl <*> getRSetup  
+               EventSet mdl <$> getPSetup mdl <*> getParam mdl <*> getRSetup  <*> getWebDAV
           getPSetup :: (Model a) => a -> Parser (ProcessSetup a) 
           getPSetup _ = lookupfunc "psetup" m
           getParam :: (Model a) => a -> Parser (ModelParam a) 
           getParam _ = lookupfunc "param" m  
           getRSetup :: Parser RunSetup 
           getRSetup = lookupfunc "rsetup" m
+          getWebDAV = lookupfunc "webdav" m 
   parseJSON _ = fail "EventSet not parsed"
 
 
