@@ -5,7 +5,7 @@
 
 -----------------------------------------------------------------------------
 -- |
--- Module      : HEP.Automation.EventGeneration.Type.JSON 
+-- Module      : HEP.Automation.EventGeneration.Type
 -- Copyright   : (c) 2011-2013 Ian-Woo Kim
 --
 -- License     : BSD3
@@ -13,11 +13,11 @@
 -- Stability   : experimental
 -- Portability : GHC
 --
--- Event Generation Specification using JSON type
+-- Event Generation Specification Types and JSON rep
 --
 ----------------------------------------------------
 
-module HEP.Automation.EventGeneration.Type.JSON where
+module HEP.Automation.EventGeneration.Type where
 
 import Control.Applicative
 import qualified Data.Aeson.Generic as G
@@ -26,6 +26,7 @@ import Data.Data
 import qualified  Data.HashMap.Strict as M
 import Data.Text hiding (map)
 -- 
+import HEP.Automation.MadGraph.JSON
 import HEP.Automation.MadGraph.Model
 import HEP.Automation.MadGraph.ModelParser
 import HEP.Automation.MadGraph.SetupType 
@@ -51,10 +52,7 @@ instance Show EventSet where
     ++ "\n"
     ++ show rsetup
 
-
-
-
-
+{-
 -- | 
 atomize :: (Show a) => a -> Value 
 atomize = atomizeStr . show 
@@ -80,89 +78,18 @@ instance (Data a) => FromJSON a where
                 in case r of 
                      Success a -> return a 
                      Error _str -> fail $ (show . typeOf) (undefined :: a) ++ " is not parsed"
-
-
-{-
--- | 
-instance ToJSON MadGraphVersion where
-  toJSON MadGraph4 = "MadGraph4"
-  toJSON MadGraph5 = "MadGraph5"
-
--- | 
-instance FromJSON MadGraphVersion where
-  parseJSON (String "MadGraph4") = return MadGraph4
-  parseJSON (String "MadGraph5") = return MadGraph5
-  parseJSON _ = fail "MadGraphVersion not parsed"
 -}
 
-{-
--- | 
-instance (Model a) => ToJSON (ModelParam a) where
-  toJSON p = let str = briefParamShow p  
-              in  String (pack str) 
 
--- | 
-instance (Model a) => FromJSON (ModelParam a) where
-  parseJSON (String str) = return . interpreteParam . unpack $ str
-  parseJSON _ = fail "ModelParam not parsed"
--}
-
+{- 
 -- | 
 modelFromJSON :: (Model a) => Value -> Parser a 
 modelFromJSON (String str) = maybe (fail "modelFromJSON failed") return $ modelFromString . unpack $ str
 modelFromJSON _ = fail "modelFromJSON failed"
 
-{-
--- |
-instance (Model a) => ToJSON (ProcessSetup a) where
-  toJSON p = object [ "model" .= ( atomizeStr . modelName . model $ p )
-                    , "process" .= ( atomizeStr . process $ p )
-                    , "processBrief" .= ( atomizeStr . processBrief $ p )
-                    , "workname" .= ( atomizeStr . workname $ p) ]
-
--- | 
-instance (Model a) => FromJSON (ProcessSetup a) where
-  parseJSON (Object m) = PS <$> (elookup "model" m >>= modelFromJSON)
-                            <*> lookupfunc "process" m
-                            <*> lookupfunc "processBrief" m
-                            <*> lookupfunc "workname" m
-  parseJSON _ = fail "ProcessSetup not parsed"
 -}
 
---  "param" .= (toJSON . param $ p)
-
 {-
--- |
-instance ToJSON RunSetup where
-  toJSON p = object [ "numevent"  .= (G.toJSON . numevent $ p)
-                    , "machine"   .= (G.toJSON . machine $ p)
-                    , "rgrun"     .= (G.toJSON . rgrun $ p)
-                    , "rgscale"   .= (G.toJSON . rgscale $ p)
-                    , "match"     .= (G.toJSON . match $ p)
-                    , "cut"       .= (G.toJSON . cut $ p) 
-                    , "pythia"    .= (G.toJSON . pythia $ p)
-                    , "lhesanitizer" .= (G.toJSON . lhesanitizer $ p)
-                    , "pgs"       .= (G.toJSON . pgs $ p) 
-                    , "hep"       .= (G.toJSON . uploadhep $ p)
-                    , "setnum"    .= (G.toJSON . setnum $ p) ] 
-
--- |
-instance (Model a) => FromJSON (RunSetup a) where
-  parseJSON (Object m) =   RS <$> lookupfunc "param" m   
-                              <*> lookupfunc "numevent" m
-                              <*> lookupfunc "machine" m 
-                              <*> lookupfunc "rgrun" m
-                              <*> lookupfunc "rgscale" m 
-                              <*> lookupfunc "match" m
-                              <*> lookupfunc "cut" m     
-                              <*> lookupfunc "pythia" m
-                              <*> lookupfunc "lhesanitizer" m
-                              <*> lookupfunc "pgs" m     
-                              <*> lookupfunc "hep" m     
-                              <*> lookupfunc "setnum" m
-  parseJSON _ = fail "RunSetup not parsed"
--}
-
 instance ToJSON RunSetup where 
   toJSON = G.toJSON
 
@@ -175,9 +102,6 @@ instance (Model a) => ToJSON (ProcessSetup a) where
 instance (Model a) => ToJSON (ModelParam a) where 
   toJSON = G.toJSON
 
--- instance FromJSON RunSetup where
---   parseJSON = 
-
 -- | 
 instance ToJSON WebDAVRemoteDir where
   toJSON (WebDAVRemoteDir rdir) = toJSON rdir 
@@ -185,8 +109,7 @@ instance ToJSON WebDAVRemoteDir where
 -- |
 instance FromJSON WebDAVRemoteDir where
   parseJSON v = WebDAVRemoteDir <$> parseJSON v
-
-
+-}
 
 instance ToJSON EventSet where
   toJSON (EventSet mdl psetup param rsetup) = 

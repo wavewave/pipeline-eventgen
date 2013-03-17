@@ -6,8 +6,9 @@ import Data.Data
 import Data.Typeable
 import System.Console.CmdArgs
 
-data EvGen = TestOutput { config :: FilePath }  
-           | Work  { config :: FilePath }
+data EvGen = -- TestOutput { config :: FilePath }  |
+                                       
+             Work  { config :: FilePath }
            | Upload { config :: FilePath 
                     , webdavhost :: String 
                     } 
@@ -19,8 +20,8 @@ data EvGen = TestOutput { config :: FilePath }
                     , computername :: String } 
            deriving (Show,Data,Typeable)
 
-testoutput :: EvGen 
-testoutput = TestOutput { config = "" &= typ "CONFIG" &= argPos 0 } 
+-- testoutput :: EvGen 
+-- testoutput = TestOutput { config = "" &= typ "CONFIG" &= argPos 0 } 
 
 work :: EvGen 
 work = Work { config = "" &= typ "CONFIG" &= argPos 0 }
@@ -41,5 +42,5 @@ remove = Remove { config = "deployconfig.txt"
                 , computername = "" &= typ "COMPUTERNAME" &= argPos 0
                 }
 
-mode = modes [ testoutput, work, upload, deploy, remove ] 
+mode = modes [ {- testoutput, -} work, upload, deploy, remove ] 
 

@@ -31,7 +31,7 @@ import System.FilePath((</>),(<.>))
 -- 
 import HEP.Automation.MadGraph.Model
 -- import HEP.Automation.MadGraph.Model.SM
-import HEP.Automation.MadGraph.Model.ADMXQLD211
+-- import HEP.Automation.MadGraph.Model.ADMXQLD211
 import HEP.Automation.MadGraph.Machine
 import HEP.Automation.MadGraph.SetupType
 import HEP.Automation.MadGraph.Run
@@ -39,60 +39,15 @@ import HEP.Storage.WebDAV
 -- 
 import HEP.Automation.EventGeneration.Config
 import HEP.Automation.EventGeneration.Deploy
-import HEP.Automation.EventGeneration.Type.JSON
+import HEP.Automation.EventGeneration.Type
 import HEP.Automation.EventGeneration.Util
 import HEP.Automation.EventGeneration.Work
 -- 
 import qualified Paths_madgraph_auto as PMadGraph
 import qualified Paths_madgraph_auto_model as PModel
 
--- | 
-processSetup :: ProcessSetup ADMXQLD211
-processSetup = PS {  
-    model = ADMXQLD211
-  , process = "\ngenerate p p > t t~ \n" 
-  , processBrief = "ttbar" 
-  , workname   = "Test002"
-  }
-
--- | 
-pset :: ModelParam ADMXQLD211
-pset = -- SMParam 
-   ADMXQLD211Param { mstop = 50000, mgluino = 300, msquark = 100 }
-
-
-rsetup = RS { numevent = 100
-            , machine = LHC7 ATLAS
-            , rgrun   = Auto -- Fixed
-            , rgscale = 200.0
-            , match   = NoMatch
-            , cut     = NoCut 
-            , pythia  = RunPYTHIA
-            , lhesanitizer = -- NoLHESanitize  
-                             LHESanitize (Replace [(9000201,1000022),(-9000201,1000022)]) 
-            , pgs     = RunPGS (Cone 0.4,WithTau)
-            , uploadhep = UploadHEP
-            , setnum  = 1
-            }
 
 dummywebdav = (WebDAVRemoteDir "curltest")
-
--- | 
-getWSetup :: ScriptSetup -> WorkSetup ADMXQLD211
-getWSetup ssetup = WS ssetup processSetup  pset rsetup dummywebdav 
-
-
-
-
-startTestOutput :: FilePath -> IO () 
-startTestOutput fp =  
-    getConfig fp >>= 
-      maybe (return ()) ( \ec -> do 
-        let ssetup = evgen_scriptsetup ec 
-            wsetup = getWSetup ssetup 
-        let bstr = encodePretty (EventSet ADMXQLD211 processSetup pset rsetup)
-        (L.putStrLn bstr) 
-      )
 
 parseEvSetFromStdin :: IO (Either String EventSet) 
 parseEvSetFromStdin = do 
