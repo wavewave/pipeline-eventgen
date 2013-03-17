@@ -81,6 +81,8 @@ startUpload fp = do
             let wdavcfg = WebDAVConfig { webdav_credential = cr 
                                        , webdav_baseurl = whost }
             uploadEventFull uploadtyp wdavcfg wsetup 
+            uploadJSON wdavcfg wsetup
+
             return ()
           )
       )

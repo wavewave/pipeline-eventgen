@@ -22,8 +22,10 @@ import Control.Monad
 import Control.Monad.Error
 import Control.Monad.Reader
 import Control.Monad.Trans
+import Data.Aeson.Encode.Pretty (encodePretty)
+import qualified Data.ByteString.Lazy.Char8 as L
 import System.Directory 
-import System.FilePath ((</>),splitFileName)
+import System.FilePath ((</>),(<.>),splitFileName)
 import System.Log.Logger
 import System.Process
 -- 
@@ -35,6 +37,7 @@ import HEP.Automation.MadGraph.Util
 import HEP.Storage.WebDAV
 import HEP.Storage.WebDAV.Type
 -- 
+import HEP.Automation.EventGeneration.Type
 
 -- |
 work :: Model a => WorkSetup a -> IO ()
@@ -91,6 +94,19 @@ uploadEventFull t wdav wsetup = do
 -- |
 uploadEvent :: (Model a) => WebDAVConfig -> WorkSetup a -> String -> IO ()
 uploadEvent wdav wsetup ext = upload wdav wsetup ext (getMCDir wsetup) 
+
+-- | 
+uploadJSON :: (Model a) => WebDAVConfig -> WorkSetup a -> IO ()
+uploadJSON wdav wsetup@WS {..} = do 
+  let ldir = getMCDir wsetup
+      rname = makeRunName ws_psetup ws_param ws_rsetup 
+      lpath = ldir </> rname <.> "json"
+      evset = EventSet (model ws_psetup) ws_psetup ws_param ws_rsetup ws_storage
+
+      bstr = encodePretty evset
+  L.writeFile lpath bstr
+  uploadFile wdav ws_storage lpath 
+  return ()
 
 -- |
 upload :: (Model a) => 
