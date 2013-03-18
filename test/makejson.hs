@@ -19,21 +19,10 @@ import HEP.Automation.MadGraph.SetupType
 import HEP.Automation.EventGeneration.Type
 
 
+{-
 
--- | 
-ttbar012 :: ProcessSetup SM 
-ttbar012 = PS {  
-    model = SM
-  , process = [ "p p > t t~   QCD=99 QED=2 @0"
-              , "p p > t t~ j QCD=99 QED=2 @1"
-              , "p p > t t~ j j QCD=99 QED=2 @2"
-              ] 
-  , processBrief = "ttbar012j" 
-  , workname   = "Test003"
-  }
-
-wp01 :: ProcessSetup SM 
-wp01 = PS {  
+p_wp01 :: ProcessSetup SM 
+p_wp01 = PS {  
     model = SM
   , process = [ "p p > w+ QCD=99 QED=2 @0"
               , "p p > w+ j QCD=99 QED=2 @1"
@@ -44,8 +33,8 @@ wp01 = PS {
 
 wdav_wp01 = WebDAVRemoteDir "montecarlo/admproject/smbkg/wp01"
 
-wp012 :: ProcessSetup SM 
-wp012 = PS {  
+p_wp012 :: ProcessSetup SM 
+p_wp012 = PS {  
     model = SM
   , process = [ "p p > w+ QCD=99 QED=2 @0"
               , "p p > w+ j QCD=99 QED=2 @1"
@@ -55,6 +44,285 @@ wp012 = PS {
   , workname   = "wp012j"
   }
 wdav_wp012 = WebDAVRemoteDir "montecarlo/admproject/smbkg/wp012"
+
+p_wp0123 :: ProcessSetup SM 
+p_wp0123 = PS {  
+    model = SM
+  , process = [ "p p > w+ QCD=99 QED=2 @0"
+              , "p p > w+ j QCD=99 QED=2 @1"
+              , "p p > w+ j j QCD=99 QED=2 @2"
+              , "p p > w+ j j j QCD=99 QED=2 @3"
+              ] 
+  , processBrief = "wp0123j" 
+  , workname   = "wp0123j"
+  }
+wdav_wp0123 = WebDAVRemoteDir "montecarlo/admproject/smbkg/wp0123"
+
+wp0123 = (p_wp0123,wdav_wp0123)
+
+
+p_z01 :: ProcessSetup SM 
+p_z01 = PS {  
+    model = SM
+  , process = [ "p p > z QCD=99 QED=2 @0"
+              , "p p > z j QCD=99 QED=2 @1"
+              ] 
+  , processBrief = "z01j" 
+  , workname   = "z01j"
+  }
+
+wdav_z01 = WebDAVRemoteDir "montecarlo/admproject/smbkg/z01"
+
+z01 = (p_z01,wdav_z01)
+
+--
+
+p_z012 :: ProcessSetup SM 
+p_z012 = PS {  
+    model = SM
+  , process = [ "p p > z QCD=99 QED=2 @0"
+              , "p p > z j QCD=99 QED=2 @1"
+              , "p p > z j j QCD=99 QED=2 @2"
+              ] 
+  , processBrief = "z012j" 
+  , workname   = "z012j"
+  }
+
+wdav_z012 = WebDAVRemoteDir "montecarlo/admproject/smbkg/z012"
+
+z012 = (p_z012,wdav_z012)
+
+
+
+p_z0123 :: ProcessSetup SM 
+p_z0123 = PS {  
+    model = SM
+  , process = [ "p p > z QCD=99 QED=2 @0"
+              , "p p > z j QCD=99 QED=2 @1"
+              , "p p > z j j QCD=99 QED=2 @2"
+              , "p p > z j j j QCD=99 QED=2 @3"
+              ] 
+  , processBrief = "z0123j" 
+  , workname   = "z0123j"
+  }
+
+wdav_z0123 = WebDAVRemoteDir "montecarlo/admproject/smbkg/z0123"
+
+z0123 = (p_z0123,wdav_z0123)
+
+
+
+p_a01 :: ProcessSetup SM 
+p_a01 = PS {  
+    model = SM
+  , process = [ "p p > a QCD=99 QED=2 @0"
+              , "p p > a j QCD=99 QED=2 @1"
+              ] 
+  , processBrief = "a01j" 
+  , workname   = "a01j"
+  }
+
+wdav_a01 = WebDAVRemoteDir "montecarlo/admproject/smbkg/a01"
+
+a01 = (p_a01,wdav_a01)
+
+
+
+p_a012 :: ProcessSetup SM 
+p_a012 = PS {  
+    model = SM
+  , process = [ "p p > a QCD=99 QED=2 @0"
+              , "p p > a j QCD=99 QED=2 @1"
+              , "p p > a j j QCD=99 QED=2 @2"
+              ] 
+  , processBrief = "a012j" 
+  , workname   = "a012j"
+  }
+
+wdav_a012 = WebDAVRemoteDir "montecarlo/admproject/smbkg/a012"
+
+a012 = (p_a012,wdav_a012)
+
+
+-- | 
+p_tt01 :: ProcessSetup SM 
+p_tt01 = PS {  
+    model = SM
+  , process = [ "p p > t t~   QCD=99 QED=2 @0"
+              , "p p > t t~ j QCD=99 QED=2 @1"
+              ] 
+  , processBrief = "tt01j" 
+  , workname   = "tt01j"
+  }
+
+wdav_tt01 = WebDAVRemoteDir "montecarlo/admproject/smbkg/tt01"
+
+tt01 = (p_tt01,wdav_tt01)
+
+
+-- | 
+p_tt012 :: ProcessSetup SM 
+p_tt012 = PS {  
+    model = SM
+  , process = [ "p p > t t~   QCD=99 QED=2 @0"
+              , "p p > t t~ j QCD=99 QED=2 @1"
+              , "p p > t t~ j j QCD=99 QED=2 @2"
+              ] 
+  , processBrief = "tt012j" 
+  , workname   = "tt012j"
+  }
+
+wdav_tt012 = WebDAVRemoteDir "montecarlo/admproject/smbkg/tt012"
+
+tt012 = (p_tt012,wdav_tt012)
+
+
+p_wm01 :: ProcessSetup SM 
+p_wm01 = PS {  
+    model = SM
+  , process = [ "p p > w- QCD=99 QED=2 @0"
+              , "p p > w- j QCD=99 QED=2 @1"
+              ] 
+  , processBrief = "wm01j" 
+  , workname   = "wm01j"
+  }
+
+wdav_wm01 = WebDAVRemoteDir "montecarlo/admproject/smbkg/wm01"
+
+wm01 = (p_wm01, wdav_wm01 )
+
+
+
+p_wm012 :: ProcessSetup SM 
+p_wm012 = PS {  
+    model = SM
+  , process = [ "p p > w- QCD=99 QED=2 @0"
+              , "p p > w- j QCD=99 QED=2 @1"
+              , "p p > w- j j QCD=99 QED=2 @2"
+              ] 
+  , processBrief = "wm012j" 
+  , workname   = "wm012j"
+  }
+
+wdav_wm012 = WebDAVRemoteDir "montecarlo/admproject/smbkg/wm012"
+
+wm012 = (p_wm012, wdav_wm012 )
+
+
+
+p_wm0123 :: ProcessSetup SM 
+p_wm0123 = PS {  
+    model = SM
+  , process = [ "p p > w- QCD=99 QED=2 @0"
+              , "p p > w- j QCD=99 QED=2 @1"
+              , "p p > w- j j QCD=99 QED=2 @2"
+              , "p p > w- j j j QCD=99 QED=2 @3"
+              ] 
+  , processBrief = "wm0123j" 
+  , workname   = "wm0123j"
+  }
+
+wdav_wm0123 = WebDAVRemoteDir "montecarlo/admproject/smbkg/wm0123"
+
+wm0123 = (p_wm0123, wdav_wm0123 )
+
+-}
+
+
+{-
+p_tbbar01 :: ProcessSetup SM 
+p_tbbar01 = PS {  
+    model = SM
+  , process = [ "p p > t b~ QCD=99 QED=2 @0"
+              , "p p > t b~ j QCD=99 QED=2 @1"
+              ] 
+  , processBrief = "tbbar01j" 
+  , workname   = "tbbar01j"
+  }
+
+wdav_tbbar01 = WebDAVRemoteDir "montecarlo/admproject/smbkg/tbbar01"
+
+tbbar01 = (p_tbbar01,wdav_tbbar01)
+
+
+p_tbbar012 :: ProcessSetup SM 
+p_tbbar012 = PS {  
+    model = SM
+  , process = [ "p p > t b~ QCD=99 QED=2 @0"
+              , "p p > t b~ j QCD=99 QED=2 @1"
+              , "p p > t b~ j j QCD=99 QED=2 @2"
+              ] 
+  , processBrief = "tbbar012j" 
+  , workname   = "tbbar012j"
+  }
+
+wdav_tbbar012 = WebDAVRemoteDir "montecarlo/admproject/smbkg/tbbar012"
+
+tbbar012 = (p_tbbar012,wdav_tbbar012)
+
+p_tbbar0123 :: ProcessSetup SM 
+p_tbbar0123 = PS {  
+    model = SM
+  , process = [ "p p > t b~ QCD=99 QED=2 @0"
+              , "p p > t b~ j QCD=99 QED=2 @1"
+              , "p p > t b~ j j QCD=99 QED=2 @2"
+              , "p p > t b~ j j j QCD=99 QED=2 @3"
+              ] 
+  , processBrief = "tbbar0123j" 
+  , workname   = "tbbar0123j"
+  }
+
+wdav_tbbar0123 = WebDAVRemoteDir "montecarlo/admproject/smbkg/tbbar0123"
+
+tbbar0123 = (p_tbbar0123,wdav_tbbar0123)
+-}
+
+p_tbarb01 :: ProcessSetup SM 
+p_tbarb01 = PS {  
+    model = SM
+  , process = [ "p p > t~ b QCD=99 QED=2 @0"
+              , "p p > t~ b j QCD=99 QED=2 @1"
+              ] 
+  , processBrief = "tbarb01j" 
+  , workname   = "tbarb01j"
+  }
+
+wdav_tbarb01 = WebDAVRemoteDir "montecarlo/admproject/smbkg/tbarb01"
+
+tbarb01 = (p_tbarb01,wdav_tbarb01)
+
+
+p_tbarb012 :: ProcessSetup SM 
+p_tbarb012 = PS {  
+    model = SM
+  , process = [ "p p > t~ b QCD=99 QED=2 @0"
+              , "p p > t~ b j QCD=99 QED=2 @1"
+              , "p p > t~ b j j QCD=99 QED=2 @2"
+              ] 
+  , processBrief = "tbarb012j" 
+  , workname   = "tbarb012j"
+  }
+
+wdav_tbarb012 = WebDAVRemoteDir "montecarlo/admproject/smbkg/tbarb012"
+
+tbarb012 = (p_tbarb012,wdav_tbarb012)
+
+p_tbarb0123 :: ProcessSetup SM 
+p_tbarb0123 = PS {  
+    model = SM
+  , process = [ "p p > t~ b QCD=99 QED=2 @0"
+              , "p p > t~ b j QCD=99 QED=2 @1"
+              , "p p > t~ b j j QCD=99 QED=2 @2"
+              , "p p > t~ b j j j QCD=99 QED=2 @3"
+              ] 
+  , processBrief = "tbarb0123j" 
+  , workname   = "tbarb0123j"
+  }
+
+wdav_tbarb0123 = WebDAVRemoteDir "montecarlo/admproject/smbkg/tbarb0123"
+
+tbarb0123 = (p_tbarb0123,wdav_tbarb0123)
+
 
 
 
@@ -82,20 +350,30 @@ rsetup n = RS { numevent = 100000
 main :: IO ()
 main = do 
   -- args <- getArgs 
-  mapM_ mkjson [1..10] 
-  mapM_ mkpbs [1..10] 
+  let ns = [1..10] 
+      fns01 = map (\n->("testwork" </> "tbarb01work"++show n++".json")) ns
+      nfns01 = zip ns fns01
+      fns012 = map (\n->("testwork" </> "tbarb012work"++show n++".json")) ns
+      nfns012 = zip ns fns012
+      fns0123 = map (\n->("testwork" </> "tbarb0123work"++show n++".json")) ns
+      nfns0123 = zip ns fns0123
+
+  mapM_ (mkjson tbarb01) nfns01
+  mapM_ (mkjson tbarb012) nfns012
+  mapM_ (mkjson tbarb0123) nfns0123
+  mapM_ mkpbs (zip [1..] (nfns01 ++ nfns012 ++ nfns0123))
 
 
-mkjson n = do 
-  let bstr = encodePretty (EventSet SM wp012 pset (rsetup n) wdav_wp012)
-  L.writeFile ("testwork" </> "wp012work"++show n++".json") bstr
+mkjson (ps,wdav) (n,fn) = do 
+  let bstr = encodePretty (EventSet SM ps pset (rsetup n) wdav)
+  L.writeFile fn bstr
      
-mkpbs n = do 
+mkpbs (n,(_,fn)) = do 
   cdir <- getCurrentDirectory 
   tmpl <- (directoryGroup cdir :: IO (STGroup String))
   let Just t = getStringTemplate "kzurek.pbs" tmpl 
-      str = (toString . flip setManyAttrib t) [ ("workjson","testwork" </> "wp012work"++show n++".json")  ]  
-  writeFile ("kzurek"++show (n+40) <.> "pbs") str 
+      str = (toString . flip setManyAttrib t) [ ("workjson",fn) ]  
+  writeFile ("kzurek"++show n <.> "pbs") str 
   -- print $ str 
 
 
