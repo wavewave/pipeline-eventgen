@@ -30,9 +30,9 @@ import System.Log.Logger
 import System.Process
 -- 
 import HEP.Automation.MadGraph.Model
-import HEP.Automation.MadGraph.Machine
 import HEP.Automation.MadGraph.SetupType
 import HEP.Automation.MadGraph.Run
+import HEP.Automation.MadGraph.Type
 import HEP.Automation.MadGraph.Util
 import HEP.Storage.WebDAV
 import HEP.Storage.WebDAV.Type

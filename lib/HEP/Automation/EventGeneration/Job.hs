@@ -29,9 +29,9 @@ import System.Environment
 import System.FilePath((</>),(<.>))
 -- 
 import HEP.Automation.MadGraph.Model
-import HEP.Automation.MadGraph.Machine
 import HEP.Automation.MadGraph.SetupType
 import HEP.Automation.MadGraph.Run
+import HEP.Automation.MadGraph.Type
 import HEP.Storage.WebDAV
 -- 
 import HEP.Automation.EventGeneration.Config
