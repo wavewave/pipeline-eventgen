@@ -1,4 +1,4 @@
-
+import Data.List.Split 
 import Data.Aeson.Encode.Pretty (encodePretty)
 
 import qualified Data.ByteString.Lazy.Char8 as L
@@ -13,7 +13,7 @@ import HEP.Automation.MadGraph.Model
 import HEP.Automation.MadGraph.Model.SM
 -- import HEP.Automation.MadGraph.Model.ADMXQLD211
 
-import HEP.Automation.MadGraph.Machine
+import HEP.Automation.MadGraph.Type
 import HEP.Automation.MadGraph.SetupType
 
 import HEP.Automation.EventGeneration.Type
@@ -94,23 +94,6 @@ z012 = (p_z012,wdav_z012)
 
 
 
-p_z0123 :: ProcessSetup SM 
-p_z0123 = PS {  
-    model = SM
-  , process = [ "p p > z QCD=99 QED=2 @0"
-              , "p p > z j QCD=99 QED=2 @1"
-              , "p p > z j j QCD=99 QED=2 @2"
-              , "p p > z j j j QCD=99 QED=2 @3"
-              ] 
-  , processBrief = "z0123j" 
-  , workname   = "z0123j"
-  }
-
-wdav_z0123 = WebDAVRemoteDir "montecarlo/admproject/smbkg/z0123"
-
-z0123 = (p_z0123,wdav_z0123)
-
-
 
 p_a01 :: ProcessSetup SM 
 p_a01 = PS {  
@@ -159,22 +142,6 @@ wdav_tt01 = WebDAVRemoteDir "montecarlo/admproject/smbkg/tt01"
 
 tt01 = (p_tt01,wdav_tt01)
 
-
--- | 
-p_tt012 :: ProcessSetup SM 
-p_tt012 = PS {  
-    model = SM
-  , process = [ "p p > t t~   QCD=99 QED=2 @0"
-              , "p p > t t~ j QCD=99 QED=2 @1"
-              , "p p > t t~ j j QCD=99 QED=2 @2"
-              ] 
-  , processBrief = "tt012j" 
-  , workname   = "tt012j"
-  }
-
-wdav_tt012 = WebDAVRemoteDir "montecarlo/admproject/smbkg/tt012"
-
-tt012 = (p_tt012,wdav_tt012)
 
 
 p_wm01 :: ProcessSetup SM 
@@ -277,6 +244,8 @@ wdav_tbbar0123 = WebDAVRemoteDir "montecarlo/admproject/smbkg/tbbar0123"
 tbbar0123 = (p_tbbar0123,wdav_tbbar0123)
 -}
 
+
+{-
 p_tbarb01 :: ProcessSetup SM 
 p_tbarb01 = PS {  
     model = SM
@@ -323,6 +292,58 @@ wdav_tbarb0123 = WebDAVRemoteDir "montecarlo/admproject/smbkg/tbarb0123"
 
 tbarb0123 = (p_tbarb0123,wdav_tbarb0123)
 
+-}
+
+{-
+p_wp0123 :: ProcessSetup SM 
+p_wp0123 = PS {  
+    model = SM
+  , process = MGProc [] [ "p p > w+ QCD=99 QED=2 @0"
+                        , "p p > w+ j QCD=99 QED=2 @1"
+                        , "p p > w+ j j QCD=99 QED=2 @2"
+                        , "p p > w+ j j j QCD=99 QED=2 @3"
+                        ] 
+  , processBrief = "wp0123j" 
+  , workname   = "wp0123j"
+  }
+wdav_wp0123 = WebDAVRemoteDir "montecarlo/admproject/smbkg/wp0123"
+
+wp0123 = (p_wp0123,wdav_wp0123)
+-}
+
+{-
+p_z0123 :: ProcessSetup SM 
+p_z0123 = PS {  
+    model = SM
+  , process = MGProc [] [ "p p > z QCD=99 QED=2 @0"
+                        , "p p > z j QCD=99 QED=2 @1"
+                        , "p p > z j j QCD=99 QED=2 @2"
+                        , "p p > z j j j QCD=99 QED=2 @3"
+                        ] 
+  , processBrief = "z0123j" 
+  , workname   = "z0123j"
+  }
+
+wdav_z0123 = WebDAVRemoteDir "montecarlo/admproject/smbkg/z0123"
+
+z0123 = (p_z0123,wdav_z0123)
+-}
+
+-- | 
+p_tt012 :: ProcessSetup SM 
+p_tt012 = PS {  
+    model = SM
+  , process = MGProc [] [ "p p > t t~   QCD=99 QED=2 @0"
+                        , "p p > t t~ j QCD=99 QED=2 @1"
+                        , "p p > t t~ j j QCD=99 QED=2 @2"
+                        ]  
+  , processBrief = "tt012j" 
+  , workname   = "tt012j"
+  }
+
+wdav_tt012 = WebDAVRemoteDir "montecarlo/admproject/smbkg/tt012"
+
+tt012 = (p_tt012,wdav_tt012)
 
 
 
@@ -331,10 +352,10 @@ pset :: ModelParam SM
 pset = SMParam 
 
 
-rsetup n = RS { numevent = 100000
+rsetup n = RS { numevent = 50000
               , machine = LHC7 ATLAS
               , rgrun   = Auto -- Fixed
-              , rgscale = 200.0
+              , rgscale = 91.0
               , match   = MLM
               , cut     = DefCut 
               , pythia  = RunPYTHIA
@@ -350,29 +371,43 @@ rsetup n = RS { numevent = 100000
 main :: IO ()
 main = do 
   -- args <- getArgs 
-  let ns = [1..10] 
-      fns01 = map (\n->("testwork" </> "tbarb01work"++show n++".json")) ns
-      nfns01 = zip ns fns01
-      fns012 = map (\n->("testwork" </> "tbarb012work"++show n++".json")) ns
-      nfns012 = zip ns fns012
-      fns0123 = map (\n->("testwork" </> "tbarb0123work"++show n++".json")) ns
-      nfns0123 = zip ns fns0123
+  let ns = [1..1000] 
+           ------------ below this.  z
+           -- [3001..4500] 
+           -- [1501..3000]
+           -- [1..1500]
 
-  mapM_ (mkjson tbarb01) nfns01
-  mapM_ (mkjson tbarb012) nfns012
-  mapM_ (mkjson tbarb0123) nfns0123
-  mapM_ mkpbs (zip [1..] (nfns01 ++ nfns012 ++ nfns0123))
+           ------------ below this.  w+
+           -- [3001..4500] 
+           -- [1501..3000]   -- from 1501, each set has 50000 events
+
+           -- [1201..1500] -- up to set 1500, each set has 100000 events
+           -- [601..1200] 
+           -- [301..600]
+
+           -- concat [[6*n+4,6*n+5,6*n+6] | n <- [0..49] ]  -- -- [1..300] 
+           -- [100,101,102,106,107,108,112,113,114,118,119,120,124,125,126,130,131,132,136,137,138,142,143,144,148,149,150
+      fns012 = map (\n->("testwork" </> "tt012new"++show n++".json")) ns
+      nfns012 = zip ns fns012
+      
+      nfns012_sp = splitEvery 10 fns012
+
+  mapM_ (mkjson tt012) nfns012
+  mapM_ mkpbs (zip [1..] nfns012_sp)
 
 
 mkjson (ps,wdav) (n,fn) = do 
   let bstr = encodePretty (EventSet SM ps pset (rsetup n) wdav)
   L.writeFile fn bstr
      
-mkpbs (n,(_,fn)) = do 
+mkpbs (n,fns) = do 
   cdir <- getCurrentDirectory 
   tmpl <- (directoryGroup cdir :: IO (STGroup String))
   let Just t = getStringTemplate "kzurek.pbs" tmpl 
-      str = (toString . flip setManyAttrib t) [ ("workjson",fn) ]  
+      workstr1 fn = "\npipeline-eventgen work /tmp/pipeline/\"$PBS_JOBID\"config1.txt < " ++ fn 
+                    ++ "\npipeline-eventgen upload /tmp/pipeline/\"$PBS_JOBID\"config1.txt < " ++ fn 
+      workstr = concatMap workstr1 
+      str = (toString . flip setManyAttrib t) [ ("workload",workstr fns) ]  
   writeFile ("kzurek"++show n <.> "pbs") str 
   -- print $ str 
 

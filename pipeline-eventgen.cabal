@@ -37,6 +37,7 @@ Executable pipeline-eventgen
                  attoparsec >= 0.10,
                  configurator >= 0.2.0.2,  
                  hslogger >= 1.2,
+                 random,
                  pipeline-eventgen
                
 

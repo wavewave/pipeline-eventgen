@@ -67,7 +67,7 @@ work wsetup = do
                     sanitizeLHE
                     makeHepGz 
                     -- updateBanner   
-                -- cleanHepFiles  
+                cleanHepFiles  
     print r  
     return ()
 
