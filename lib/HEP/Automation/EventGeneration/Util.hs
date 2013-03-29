@@ -57,7 +57,7 @@ downloadNUntar tdir url dir cr = do
   let wdavc = WebDAVConfig { webdav_credential = cr 
                            , webdav_baseurl = urlb } 
       rdir = WebDAVRemoteDir "" 
-  downloadFile wdavc rdir fn
+  downloadFile False wdavc rdir fn
   setCurrentDirectory dir 
   system ( "tar xvzf " ++ ( tdir </> fn ) )
   return ()

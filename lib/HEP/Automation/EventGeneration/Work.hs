@@ -127,7 +127,7 @@ download wdav WS {..} ext = do
   let rname = makeRunName ws_psetup ws_param ws_rsetup 
       filename = rname ++ ext 
   putStrLn $ "downloading " ++ filename
-  downloadFile wdav ws_storage filename
+  downloadFile False wdav ws_storage filename
   return ()
 
 -- | 
