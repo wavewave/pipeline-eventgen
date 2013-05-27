@@ -53,6 +53,7 @@ data DeployConfig =
                     , deploy_deployroot :: FilePath
                     , deploy_mg5url :: String 
                     , deploy_pythiapgsurl :: String 
+                    , deploy_pythia8url :: String 
                     , deploy_webdavroot :: String 
                     }
        deriving Show 
@@ -95,8 +96,9 @@ getDeployConfig fp = do
       root <- MaybeT (C.lookup config "deployroot")
       mg5 <-  MaybeT (C.lookup config "mg5url")
       pythiapgs <- MaybeT (C.lookup config "pythiapgsurl")
+      pythia8 <- MaybeT (C.lookup config "pythia8url")
       davroot <- MaybeT (C.lookup config "webdavroot")
-      return (DeployConfig pkey pswd root mg5 pythiapgs davroot)
+      return (DeployConfig pkey pswd root mg5 pythiapgs pythia8 davroot)
 
 
 

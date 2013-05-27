@@ -111,6 +111,39 @@ compilePythiaPGS pydir = do
   system "make" 
   return ()
 
+
+-- |
+installPythia8 :: DeployConfig
+               -> ComputerName 
+               -> Credential 
+               -> IO () 
+installPythia8 dc cname cr = do 
+  let rootdir = deploy_deployroot dc </> cname 
+      url = deploy_pythia8url dc
+  putStrLn "install pythia8"
+  downloadNUntar (rootdir </> "downloads") url rootdir cr 
+  py8dir <- findPythia8Dir dc cname
+  compilePythia8 py8dir 
+  return () 
+
+findPythia8Dir :: DeployConfig -> ComputerName -> IO FilePath
+findPythia8Dir dc cname = do 
+  let rootdir = deploy_deployroot dc </> cname
+  cnts <- getDirectoryContents rootdir
+  let matchfunc str = 
+        case str of 
+          'p':'y':'t':'h':'i':'a':'8':'1':'6':'5':xs -> True
+          _ -> False 
+  let dir = (head . filter matchfunc) cnts 
+  return (rootdir </> dir)
+
+-- | 
+compilePythia8 :: FilePath -> IO ()
+compilePythia8 = compilePythiaPGS
+
+  
+
+
 -- | 
 createWorkDirs :: DeployConfig -> ComputerName -> IO (FilePath,FilePath)
 createWorkDirs dc cname = do 
