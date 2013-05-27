@@ -16,10 +16,14 @@
 
 module HEP.Automation.EventGeneration.Deploy where
 
+import Control.Applicative 
 import Control.Monad (liftM)
+import Data.Char (isAlpha)
+import           Data.List (find)
 import System.Directory 
 import System.FilePath ((</>),(<.>),splitFileName)
 import System.Process (system)
+import Text.StringTemplate
 --
 import HEP.Storage.WebDAV
 --
@@ -27,6 +31,29 @@ import HEP.Automation.EventGeneration.Config
 import HEP.Automation.EventGeneration.Util
 -- 
 import qualified Paths_madgraph_auto_model as PModel 
+import qualified Paths_pipeline_eventgen as PPipeline
+
+renderTemplateGroup :: (ToSElem a) => STGroup String -> [(String,a)] 
+                    -> [Char] -> String 
+renderTemplateGroup gr attrs tmpl = 
+    maybe ("template not found: " ++ tmpl)
+          (toString . setManyAttribSafer attrs) 
+          (getStringTemplate tmpl gr)
+
+setManyAttribSafer :: (Stringable b, ToSElem a) => 
+                      [(String, a)] 
+                   -> StringTemplate b 
+                   -> StringTemplate b
+setManyAttribSafer attrs st = 
+    let mbFoundbadattr = find badTmplVarName . map fst $ attrs 
+    in maybe (setManyAttrib attrs st) 
+             (\mbA -> newSTMP . ("setManyAttribSafer, bad template atr: "++) 
+                      $ mbA)
+             mbFoundbadattr 
+  where badTmplVarName :: String -> Bool 
+        badTmplVarName t = not . null . filter (not . isAlpha) $ t 
+
+
 
 
 -- | 
@@ -142,6 +169,22 @@ compilePythia8 :: FilePath -> IO ()
 compilePythia8 = compilePythiaPGS
 
   
+-- | 
+installPythia8toHEPEVT :: DeployConfig -> ComputerName -> IO ()
+installPythia8toHEPEVT dc cname = do 
+  putStrLn "installing pythia8toHEPEVT"
+  srcdir <- (</> "resource/pythia8toHEPEVT") <$> PPipeline.getDataDir
+  let rootdir = deploy_deployroot dc </> cname
+      makedir = rootdir </> "sandbox" </> "pythia8toHEPEVT" 
+  createDirectory makedir 
+  templates <- directoryGroup srcdir 
+  let str = renderTemplateGroup templates [ ("pyeight", rootdir </> "pythia8165") ] "Makefile" 
+  writeFile (makedir </> "Makefile") str 
+  copyFile (srcdir </> "pythia8toHEPEVT.cc") (makedir </> "pythia8toHEPEVT.cc")
+  setCurrentDirectory makedir
+  system "make" 
+  return ()
+
 
 
 -- | 
