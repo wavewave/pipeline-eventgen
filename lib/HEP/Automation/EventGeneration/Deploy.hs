@@ -200,6 +200,7 @@ installHEPEVT2STDHEP dc cname pydir = do
               "Makefile" 
   writeFile (makedir </> "Makefile") str 
   copyFile (srcdir </> "hepevt2stdhep.f") (makedir </> "hepevt2stdhep.f")
+  copyFile (srcdir </> "pgs.inc") (makedir </> "pgs.inc") 
   setCurrentDirectory makedir
   system "make" 
   return ()
