@@ -104,10 +104,11 @@ startDeploy fp cname outcfg = do
       _      <- createDeployRoot dc cname  
       mg5dir <- installMadGraph dc cname cr 
       _      <- installMadGraphModels dc cname 
-      _      <- installPythiaPGS dc cname cr 
+      pydir  <- installPythiaPGS dc cname cr 
       _      <- installPythia8 dc cname cr 
       (sd,md)<- createWorkDirs dc cname 
       _      <- installPythia8toHEPEVT dc cname 
+      _      <- installHEPEVT2STDHEP dc cname pydir 
       let davroot = deploy_webdavroot dc 
       createConfigTxt dc cname (mg5dir,sd,md,davroot) outcfg_cano 
     )

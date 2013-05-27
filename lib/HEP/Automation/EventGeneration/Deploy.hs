@@ -108,7 +108,7 @@ installMadGraphModels dc cname = do
 installPythiaPGS :: DeployConfig 
                  -> ComputerName 
                  -> Credential
-                 -> IO ()
+                 -> IO FilePath 
 installPythiaPGS dc cname cr = do 
   let rootdir = deploy_deployroot dc </> cname 
       url = deploy_pythiapgsurl dc
@@ -116,7 +116,7 @@ installPythiaPGS dc cname cr = do
   downloadNUntar (rootdir </> "downloads") url rootdir cr 
   pydir <- findPythiaPGSDir dc cname
   compilePythiaPGS pydir 
-  return ()
+  return pydir 
 
 -- |
 findPythiaPGSDir :: DeployConfig -> ComputerName -> IO FilePath
@@ -184,6 +184,26 @@ installPythia8toHEPEVT dc cname = do
   setCurrentDirectory makedir
   system "make" 
   return ()
+
+-- | 
+installHEPEVT2STDHEP :: DeployConfig -> ComputerName -> FilePath -> IO ()
+installHEPEVT2STDHEP dc cname pydir = do 
+  putStrLn "installing HEPEVT2STDHEP"
+  srcdir <- (</> "resource/hepevt2stdhep") <$> PPipeline.getDataDir
+  let rootdir = deploy_deployroot dc </> cname
+      makedir = rootdir </> "sandbox" </> "hepevt2stdhep" 
+  createDirectory makedir 
+  templates <- directoryGroup srcdir 
+  let str = renderTemplateGroup templates 
+              [ ("pgslib", pydir </> "libraries" </> "PGS4" </> "lib") 
+              , ("pythialib", pydir </> "libraries" </> "pylib" </> "lib") ] 
+              "Makefile" 
+  writeFile (makedir </> "Makefile") str 
+  copyFile (srcdir </> "hepevt2stdhep.f") (makedir </> "hepevt2stdhep.f")
+  setCurrentDirectory makedir
+  system "make" 
+  return ()
+
 
 
 

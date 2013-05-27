@@ -11,6 +11,8 @@ Build-Type: 	Simple
 Cabal-Version:  >= 1.8
 data-files: resource/pythia8toHEPEVT/Makefile.st
             resource/pythia8toHEPEVT/pythia8toHEPEVT.cc
+            resource/hepevt2stdhep/Makefile.st
+            resource/hepevt2stdhep/hepevt2stdhep.f
 
 
 Executable pipeline-eventgen 
