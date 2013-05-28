@@ -38,12 +38,12 @@ import Paths_madgraph_auto_model as PModel
 type ComputerName = String 
 
 -- | 
-data EventgenConfig = EventgenConfig { 
-  evgen_computerName :: ComputerName, 
-  evgen_privatekeyfile :: FilePath, 
-  evgen_passwordstore :: FilePath, 
-  evgen_scriptsetup :: ScriptSetup, 
-  evgen_webdavroot :: String 
+data EventgenConfig = EventgenConfig 
+  { evgen_computerName :: ComputerName
+  , evgen_privatekeyfile :: FilePath
+  , evgen_passwordstore :: FilePath
+  , evgen_scriptsetup :: ScriptSetup
+  , evgen_webdavroot :: String 
 } deriving Show
 
 -- | 
@@ -72,7 +72,9 @@ getConfig fp = do
       mg5 <-  MaybeT (C.lookup config "mg5base")
       mc <- MaybeT (C.lookup config "mcrundir")
       davroot <- MaybeT (C.lookup config "webdavroot") 
-      return (EventgenConfig cname pkey pswd (SS mtmpl rtmpl sdir mg5 mc) davroot)
+      pythia <- MaybeT (C.lookup config "pythia8toHEPEVT")
+      hepevt <- MaybeT (C.lookup config "hepevt2stdhep")
+      return (EventgenConfig cname pkey pswd (SS mtmpl rtmpl sdir mg5 mc pythia hepevt) davroot)
 
 -- | 
 getCredential :: FilePath -> FilePath -> IO (Maybe Credential)

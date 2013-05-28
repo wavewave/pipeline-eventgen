@@ -170,7 +170,7 @@ compilePythia8 = compilePythiaPGS
 
   
 -- | 
-installPythia8toHEPEVT :: DeployConfig -> ComputerName -> IO ()
+installPythia8toHEPEVT :: DeployConfig -> ComputerName -> IO FilePath 
 installPythia8toHEPEVT dc cname = do 
   putStrLn "installing pythia8toHEPEVT"
   srcdir <- (</> "resource/pythia8toHEPEVT") <$> PPipeline.getDataDir
@@ -183,10 +183,10 @@ installPythia8toHEPEVT dc cname = do
   copyFile (srcdir </> "pythia8toHEPEVT.cc") (makedir </> "pythia8toHEPEVT.cc")
   setCurrentDirectory makedir
   system "make" 
-  return ()
+  return makedir 
 
 -- | 
-installHEPEVT2STDHEP :: DeployConfig -> ComputerName -> FilePath -> IO ()
+installHEPEVT2STDHEP :: DeployConfig -> ComputerName -> FilePath -> IO FilePath 
 installHEPEVT2STDHEP dc cname pydir = do 
   putStrLn "installing HEPEVT2STDHEP"
   srcdir <- (</> "resource/hepevt2stdhep") <$> PPipeline.getDataDir
@@ -203,7 +203,7 @@ installHEPEVT2STDHEP dc cname pydir = do
   copyFile (srcdir </> "pgs.inc") (makedir </> "pgs.inc") 
   setCurrentDirectory makedir
   system "make" 
-  return ()
+  return makedir 
 
 
 
@@ -223,10 +223,10 @@ createWorkDirs dc cname = do
 -- | 
 createConfigTxt :: DeployConfig 
                 -> ComputerName 
-                -> (FilePath,FilePath,FilePath,String)
+                -> (FilePath,FilePath,FilePath,String,FilePath,FilePath)
                 -> FilePath 
                 -> IO () 
-createConfigTxt dc cname (mg5dir,sbdir,mrdir,webdavroot) outcfg = do 
+createConfigTxt dc cname (mg5dir,sbdir,mrdir,webdavroot,pythia,hepevt) outcfg = do 
   let cfgstr = "computerName = " ++ show cname ++ "\n"
                ++ "privateKeyFile = " ++ show (deploy_privatekeyfile dc) ++ "\n"
                ++ "passwordStore = " ++ show (deploy_passwordstore dc) ++ "\n"
@@ -234,6 +234,8 @@ createConfigTxt dc cname (mg5dir,sbdir,mrdir,webdavroot) outcfg = do
                ++ "mg5base = " ++ show mg5dir ++ "\n"
                ++ "mcrundir = " ++ show mrdir ++ "\n"
                ++ "webdavroot = " ++ show webdavroot ++ "\n"
+               ++ "pythia8toHEPEVT = " ++ show pythia ++ "\n"
+               ++ "hepevt2stdhep = " ++ show hepevt ++ "\n"
   writeFile outcfg cfgstr 
 
 

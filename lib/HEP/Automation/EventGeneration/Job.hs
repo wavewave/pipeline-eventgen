@@ -107,10 +107,10 @@ startDeploy fp cname outcfg = do
       pydir  <- installPythiaPGS dc cname cr 
       _      <- installPythia8 dc cname cr 
       (sd,md)<- createWorkDirs dc cname 
-      _      <- installPythia8toHEPEVT dc cname 
-      _      <- installHEPEVT2STDHEP dc cname pydir 
+      pythia <- installPythia8toHEPEVT dc cname 
+      hepevt <- installHEPEVT2STDHEP dc cname pydir 
       let davroot = deploy_webdavroot dc 
-      createConfigTxt dc cname (mg5dir,sd,md,davroot) outcfg_cano 
+      createConfigTxt dc cname (mg5dir,sd,md,davroot,pythia,hepevt) outcfg_cano 
     )
 
 startRemove :: FilePath      -- ^ deploy config 
