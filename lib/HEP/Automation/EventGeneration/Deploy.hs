@@ -77,7 +77,9 @@ installMadGraph dc cname cr = do
       url = deploy_mg5url dc
   putStrLn "install madgraph"
   downloadNUntar (rootdir </> "downloads") url rootdir cr 
-  findMadGraphDir dc cname
+  mgdir <- findMadGraphDir dc cname
+  dummyMadgraphRun mgdir 
+  return mgdir 
 
   
 -- |
@@ -91,6 +93,14 @@ findMadGraphDir dc cname = do
           _ -> False 
   let dir = (head . filter matchfunc) cnts 
   return (rootdir </> dir)
+
+
+-- | 
+dummyMadgraphRun :: FilePath -> IO () 
+dummyMadgraphRun fp = do 
+  setCurrentDirectory fp
+  system "echo 'quit' | bin/mg5"
+  return () 
 
 
 -- | 
@@ -143,7 +153,7 @@ compilePythiaPGS pydir = do
 installPythia8 :: DeployConfig
                -> ComputerName 
                -> Credential 
-               -> IO () 
+               -> IO FilePath
 installPythia8 dc cname cr = do 
   let rootdir = deploy_deployroot dc </> cname 
       url = deploy_pythia8url dc
@@ -151,7 +161,7 @@ installPythia8 dc cname cr = do
   downloadNUntar (rootdir </> "downloads") url rootdir cr 
   py8dir <- findPythia8Dir dc cname
   compilePythia8 py8dir 
-  return () 
+  return py8dir 
 
 findPythia8Dir :: DeployConfig -> ComputerName -> IO FilePath
 findPythia8Dir dc cname = do 
@@ -183,7 +193,7 @@ installPythia8toHEPEVT dc cname = do
   copyFile (srcdir </> "pythia8toHEPEVT.cc") (makedir </> "pythia8toHEPEVT.cc")
   setCurrentDirectory makedir
   system "make" 
-  return makedir 
+  return (makedir </> "pythia8toHEPEVT")
 
 -- | 
 installHEPEVT2STDHEP :: DeployConfig -> ComputerName -> FilePath -> IO FilePath 
@@ -203,7 +213,7 @@ installHEPEVT2STDHEP dc cname pydir = do
   copyFile (srcdir </> "pgs.inc") (makedir </> "pgs.inc") 
   setCurrentDirectory makedir
   system "make" 
-  return makedir 
+  return (makedir </> "hepevt2stdhep")
 
 
 
@@ -223,10 +233,10 @@ createWorkDirs dc cname = do
 -- | 
 createConfigTxt :: DeployConfig 
                 -> ComputerName 
-                -> (FilePath,FilePath,FilePath,String,FilePath,FilePath)
+                -> (FilePath,FilePath,FilePath,String,FilePath,FilePath,FilePath)
                 -> FilePath 
                 -> IO () 
-createConfigTxt dc cname (mg5dir,sbdir,mrdir,webdavroot,pythia,hepevt) outcfg = do 
+createConfigTxt dc cname (mg5dir,sbdir,mrdir,webdavroot,py8dir,pythia,hepevt) outcfg = do 
   let cfgstr = "computerName = " ++ show cname ++ "\n"
                ++ "privateKeyFile = " ++ show (deploy_privatekeyfile dc) ++ "\n"
                ++ "passwordStore = " ++ show (deploy_passwordstore dc) ++ "\n"
@@ -234,6 +244,7 @@ createConfigTxt dc cname (mg5dir,sbdir,mrdir,webdavroot,pythia,hepevt) outcfg = 
                ++ "mg5base = " ++ show mg5dir ++ "\n"
                ++ "mcrundir = " ++ show mrdir ++ "\n"
                ++ "webdavroot = " ++ show webdavroot ++ "\n"
+               ++ "pythia8dir = " ++ show py8dir ++ "\n"
                ++ "pythia8toHEPEVT = " ++ show pythia ++ "\n"
                ++ "hepevt2stdhep = " ++ show hepevt ++ "\n"
   writeFile outcfg cfgstr 

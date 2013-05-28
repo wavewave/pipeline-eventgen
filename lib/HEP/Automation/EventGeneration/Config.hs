@@ -72,9 +72,10 @@ getConfig fp = do
       mg5 <-  MaybeT (C.lookup config "mg5base")
       mc <- MaybeT (C.lookup config "mcrundir")
       davroot <- MaybeT (C.lookup config "webdavroot") 
-      pythia <- MaybeT (C.lookup config "pythia8toHEPEVT")
+      pythia8dir <- MaybeT (C.lookup config "pythia8dir")
+      pythiascr <- MaybeT (C.lookup config "pythia8toHEPEVT")
       hepevt <- MaybeT (C.lookup config "hepevt2stdhep")
-      return (EventgenConfig cname pkey pswd (SS mtmpl rtmpl sdir mg5 mc pythia hepevt) davroot)
+      return (EventgenConfig cname pkey pswd (SS mtmpl rtmpl sdir mg5 mc pythia8dir pythiascr hepevt) davroot)
 
 -- | 
 getCredential :: FilePath -> FilePath -> IO (Maybe Credential)

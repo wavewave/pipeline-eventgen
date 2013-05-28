@@ -74,7 +74,7 @@ C...Event loop. List first few events.
       DO 200 IEV=1,nmax
 c        CALL PYEVNW
          read(u,*) evtnum , numptl 
-         write(*,*) 'evtnum = ', evtnum, 'numptl =', numptl
+c         write(*,*) 'evtnum = ', evtnum, 'numptl =', numptl
 
          
          do 10 i = 1 , numptl 
@@ -124,8 +124,8 @@ c            P(i,5) = PHEP(5,i)
             V(I,3)=d15
             V(I,4)=d16
 
-            write(*,*) 'K(I,1) = ', K(I,1), ' K(I,2) = ', K(I,2),
-     .                 'P(I,1) = ', P(I,1), ' P(I,2) = ', P(I,2)
+c            write(*,*) 'K(I,1) = ', K(I,1), ' K(I,2) = ', K(I,2),
+c     .                 'P(I,1) = ', P(I,1), ' P(I,2) = ', P(I,2)
 
  10      enddo
 

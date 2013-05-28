@@ -49,10 +49,6 @@ int main( int argc, char** argv ) {
       break;
     } 
    
-    // for test
-    if ( iEvent > 10 ) break; 
-    // 
-
     Event&  ev  = pythia.event;
     stringstream os ; 
 
