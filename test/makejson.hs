@@ -422,6 +422,7 @@ wdav_wpz012 = WebDAVRemoteDir "montecarlo/admproject/smbkg/wpz012"
 wpz012 = (p_wpz012,wdav_wpz012)
 -}
 
+{-
 p_wmz012 :: ProcessSetup SM 
 p_wmz012 = PS {  
     model = SM
@@ -436,6 +437,25 @@ p_wmz012 = PS {
 wdav_wmz012 = WebDAVRemoteDir "montecarlo/admproject/smbkg/wmz012"
 
 wmz012 = (p_wmz012,wdav_wmz012)
+-}
+
+-- | 
+p_tt012 :: ProcessSetup SM 
+p_tt012 = PS {  
+    model = SM
+  , process = MGProc [] [ "p p > t t~   QCD=99 QED=2 @0"
+                        , "p p > t t~ j QCD=99 QED=2 @1"
+                        , "p p > t t~ j j QCD=99 QED=2 @2"
+                        ]  
+  , processBrief = "tt012j" 
+  , workname   = "tt012j"
+  , hashSalt = HashSalt Nothing
+  }
+
+wdav_tt012 = WebDAVRemoteDir "montecarlo/admproject/sm8/tt012"
+
+tt012 = (p_tt012,wdav_tt012)
+
 
 
 -- | 
@@ -444,7 +464,7 @@ pset = SMParam
 
 
 rsetup n = RS { numevent = 50000
-              , machine = LHC7 ATLAS
+              , machine = LHC8 ATLAS
               , rgrun   = Auto -- Fixed
               , rgscale = 91.0
               , match   = MLM
@@ -460,8 +480,9 @@ rsetup n = RS { numevent = 50000
 main :: IO ()
 main = do 
   -- args <- getArgs 
-  let ns = -- ww, wz, zz
-           [1..1000] 
+  let ns = [1..1000] 
+           -- ww, wz, zz
+           -- [1..1000] 
            ------------ below this tbarb
            -- [1..1000]
            -- [468,472,208,32]
@@ -490,12 +511,12 @@ main = do
            -- [1..1000] 
 
 
-      fns012 = map (\n->("testwork" </> "wmz012new"++show n++".json")) ns
+      fns012 = map (\n->("testwork" </> "tt012_8TeV"++show n++".json")) ns
       nfns012 = zip ns fns012
       
       nfns012_sp = splitEvery 10 fns012
 
-  mapM_ (mkjson wmz012) nfns012
+  mapM_ (mkjson tt012) nfns012
   mapM_ mkpbs (zip [1..] nfns012_sp)
 
 
