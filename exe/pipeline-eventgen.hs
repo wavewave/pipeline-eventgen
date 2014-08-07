@@ -14,7 +14,7 @@ main = do
   threadDelay  (floor (rnd * 10000000))
   param <- cmdArgs mode
   case param of   
-    Work fp              -> startWork fp 
-    Upload fp            -> startUpload fp 
+    -- Work fp              -> startWork fp 
+    -- Upload fp            -> startUpload fp 
     Deploy fp cname cout -> startDeploy fp cname cout
     Remove fp cname      -> startRemove fp cname 
