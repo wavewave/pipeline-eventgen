@@ -53,24 +53,24 @@ parseEvSetFromStdin = do
                 parseEither parseJSON jsonvalue
 
 
-startWork :: FilePath -> IO () 
-startWork fp = do 
+startWork :: FilePath -> WebDAVRemoteDir -> IO () 
+startWork fp rdir = do 
     getConfig fp >>= 
       maybe (return ()) ( \ec -> do 
         parseEvSetFromStdin >>= 
-          either putStrLn ( \(EventSet _ psetup param rsetup rdir) -> do 
+          either putStrLn ( \(EventSet psetup param rsetup) -> do 
             let ssetup = evgen_scriptsetup ec 
-                wsetup = WS ssetup psetup param rsetup rdir 
+                wsetup = WS ssetup psetup param rsetup rdir
             work wsetup 
           )
       )
 
-startUpload :: FilePath -> IO () 
-startUpload fp = do 
+startUpload :: FilePath -> WebDAVRemoteDir -> IO () 
+startUpload fp rdir = do 
     getConfig fp >>= 
       maybe (return ()) ( \ec -> do 
         parseEvSetFromStdin >>= 
-          either putStrLn ( \(EventSet _ psetup param rsetup rdir) -> do 
+          either putStrLn ( \(EventSet psetup param rsetup) -> do 
             let ssetup = evgen_scriptsetup ec 
                 wsetup = WS ssetup psetup param rsetup rdir 
                 uploadtyp = uploadhep rsetup

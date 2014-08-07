@@ -1,7 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE ExistentialQuantification, 
-             FlexibleInstances, TypeSynonymInstances, OverlappingInstances,
-             UndecidableInstances, ScopedTypeVariables, ViewPatterns #-}
+{-# LANGUAGE ExistentialQuantification #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE OverlappingInstances #-}
+{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE ViewPatterns #-}
 
 -----------------------------------------------------------------------------
 -- |
@@ -36,17 +40,58 @@ import Debug.Trace
 
 data EventSet = forall a. Model a => 
   EventSet {
-    evset_model  :: a,
+    evset_psetup :: ProcessSetup a, 
+    evset_param  :: ModelParam a,
+    evset_rsetup :: RunSetup
+  } 
+
+instance Show EventSet where
+  show (EventSet p param r) = show p ++ "\n" ++ show param ++ "\n" ++ show r 
+
+
+instance ToJSON EventSet where
+  toJSON (EventSet p param r) = object [ "psetup" .= toJSON p
+                                       , "param"  .= toJSON param
+                                       , "rsetup" .= toJSON r ] 
+
+instance FromJSON EventSet where
+  parseJSON (Object m) = do 
+    psobj <- elookup "psetup" m 
+    case psobj of 
+      Object ps -> do 
+        mdl <- elookup "model" ps
+        case mdl of 
+          String str -> do 
+            modelbox <- maybe (fail "model in EventSet failed") return $ modelParse (unpack str) 
+            mkEventSet modelbox   
+          _ -> fail "model in EventSet failed"
+      _ -> fail "psetup in EventSet failed"
+    where mkEventSet :: ModelBox -> Parser EventSet
+          mkEventSet (ModelBox mdl) = 
+               EventSet <$> getPSetup mdl <*> getParam mdl <*> getRSetup
+          getPSetup :: (Model a) => a -> Parser (ProcessSetup a) 
+          getPSetup _mdl = lookupfunc "psetup" m
+          getParam :: (Model a) => a -> Parser (ModelParam a)
+          getParam _mdl = lookupfunc "param" m
+          getRSetup :: Parser RunSetup
+          getRSetup = lookupfunc "rsetup" m
+  parseJSON _ = fail "EventSet not parsed"
+
+
+{- 
+data EventSet = forall a. Model a => 
+  EventSet {
+    -- evset_model  :: a,
     evset_psetup :: ProcessSetup a, 
     evset_param  :: ModelParam a,
     evset_rsetup :: RunSetup, 
     evset_webdav :: WebDAVRemoteDir
   } 
+-}
 
+{- 
 instance Show EventSet where
   show (EventSet mdl psetup param rsetup webdav) = 
-    show mdl 
-    ++ "\n"
     ++ show psetup 
     ++ "\n" 
     ++ show param 
@@ -58,11 +103,9 @@ instance Show EventSet where
 
 instance ToJSON EventSet where
   toJSON (EventSet mdl psetup param rsetup webdav) = 
-    object [ "model"  .= (atomizeStr . modelName ) mdl 
-           , "psetup" .= toJSON psetup
+    object [ "psetup" .= toJSON psetup
            , "param"  .= toJSON param
            , "rsetup" .= toJSON rsetup 
-           , "webdav" .= toJSON webdav 
            ]
 
             
@@ -92,3 +135,4 @@ instance FromJSON EventSet where
 
 
 
+-}

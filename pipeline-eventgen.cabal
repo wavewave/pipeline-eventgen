@@ -16,33 +16,33 @@ data-files: resource/pythia8toHEPEVT/Makefile.st
             resource/hepevt2stdhep/pgs.inc
 
 
-Executable pipeline-eventgen 
-  Main-is: pipeline-eventgen.hs
-  hs-source-dirs: exe
-  ghc-options: 	-Wall -O2 -threaded -funbox-strict-fields -fno-warn-unused-do-bind
-  ghc-prof-options: -caf-all -auto-all
-  Build-Depends: base>4, 
-                 cmdargs >= 0.7,
-                 process, 
-                 unix, 
-                 directory, 
-                 mtl>2, 
-                 filepath,
-                 aeson,
-                 bytestring >= 0.9,
-                 unordered-containers>= 0.2,
-                 text                >= 0.11, 
-                 vector              >= 0.10,
-                 webdav-manager      >= 0.999,
-                 madgraph-auto       >= 0.999,
-                 madgraph-auto-model >= 0.999,
-                 LHEParser           >= 0.999, 
-                 HEPUtil             >= 0.999, 
-                 attoparsec >= 0.10,
-                 configurator >= 0.2.0.2,  
-                 hslogger >= 1.2,
-                 random,
-                 pipeline-eventgen
+-- Executable pipeline-eventgen 
+--   Main-is: pipeline-eventgen.hs
+--   hs-source-dirs: exe
+--   ghc-options: 	-Wall -O2 -threaded -funbox-strict-fields -fno-warn-unused-do-bind
+--   ghc-prof-options: -caf-all -auto-all
+--   Build-Depends: base>4, 
+--                  cmdargs >= 0.7,
+--                  process, 
+--                  unix, 
+--                  directory, 
+--                  mtl>2, 
+--                  filepath,
+--                  aeson,
+--                  bytestring >= 0.9,
+--                  unordered-containers>= 0.2,
+--                  text                >= 0.11, 
+--                  vector              >= 0.10,
+--                  webdav-manager      >= 0.999,
+--                  madgraph-auto       >= 0.999,
+--                  madgraph-auto-model >= 0.999,
+--                  LHEParser           >= 0.999, 
+--                  HEPUtil             >= 0.999, 
+--                  attoparsec >= 0.10,
+--                  configurator >= 0.2.0.2,  
+--                  hslogger >= 1.2,
+--                  random,
+--                  pipeline-eventgen
                
 
  

@@ -42,6 +42,7 @@ import HEP.Automation.EventGeneration.Type
 -- |
 work :: Model a => WorkSetup a -> IO ()
 work wsetup = do 
+    putStrLn "hello there"
     updateGlobalLogger "MadGraphAuto" (setLevel DEBUG) 
     r <- flip runReaderT wsetup . runErrorT $ do 
                 WS ssetup psetup param rsetup _ <- ask 
@@ -101,8 +102,7 @@ uploadJSON wdav wsetup@WS {..} = do
   let ldir = getMCDir wsetup
       rname = makeRunName ws_psetup ws_param ws_rsetup 
       lpath = ldir </> rname <.> "json"
-      evset = EventSet (model ws_psetup) ws_psetup ws_param ws_rsetup ws_storage
-
+      evset = EventSet ws_psetup ws_param ws_rsetup
       bstr = encodePretty evset
   L.writeFile lpath bstr
   uploadFile wdav ws_storage lpath 
