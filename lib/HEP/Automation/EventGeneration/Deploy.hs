@@ -110,9 +110,11 @@ installMadGraphModels dc cname = do
   mg5dir <- findMadGraphDir dc cname 
   tempdir <- getTemporaryDirectory 
   let copycmd = "cp -a " ++ mdldir ++ "/* " ++ mg5dir </> "models"
+      chmodcmd = "chmod -R u+w " ++ mg5dir </> "models"
   system copycmd 
   print copycmd 
-
+  system chmodcmd
+  print chmodcmd
 
 -- | 
 installPythiaPGS :: DeployConfig 
